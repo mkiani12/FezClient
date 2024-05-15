@@ -46,8 +46,13 @@ export default defineNuxtConfig({
         },
       },
       sessionDataType: {
-        userInformations: "UserInformations",
-        userPositions: "JobData[]",
+        id: "number",
+        role: "number",
+        email: "string",
+        firstname: "string",
+        lastname: "string",
+        created_at: "string",
+        updated_at: "string",
       },
       token: {
         maxAgeInSeconds: 60 * 60 * 24,

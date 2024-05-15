@@ -27,11 +27,8 @@ const login = async () => {
   };
   signIn(credential, { callbackUrl: "/" })
     .then(() => {
-      const selectedJob = useCookie("op:selected-job");
       const { data } = useAuth();
-      if (!selectedJob.value) {
-        selectedJob.value = data.value?.userPositions[0].id?.toString();
-      }
+      console.log(data);
       loading.value = false;
     })
     .catch((e) => {
@@ -60,19 +57,23 @@ const login = async () => {
                 <v-col cols="12">
                   <v-text-field
                     v-model="email"
+                    class="color-fixed-textfield"
                     :label="$t('auth.email')"
-                    color="primary"
+                    color="white"
+                    theme="dark"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12">
                   <v-text-field
                     v-model="password"
+                    class="color-fixed-textfield"
                     :label="$t('auth.password')"
                     :type="passwordVisibility ? 'text' : 'password'"
-                    color="primary"
+                    color="white"
                     :append-inner-icon="
                       passwordVisibility ? 'mdi-eye-off' : 'mdi-eye'
                     "
+                    theme="dark"
                     @click:append-inner="
                       passwordVisibility = !passwordVisibility
                     "
@@ -82,7 +83,7 @@ const login = async () => {
 
                 <v-col cols="12">
                   <v-btn
-                    color="primary"
+                    color="white"
                     size="large"
                     block
                     flat
@@ -99,7 +100,7 @@ const login = async () => {
                     <div class="mr-sm-auto">
                       <NuxtLink
                         to="/auth/forget-password"
-                        class="text-primary text-decoration-none text-body-1 opacity-1 font-weight-medium"
+                        class="text-white text-decoration-none text-body-1 opacity-1"
                       >
                         {{ $t("auth.forgot-password") }}
                       </NuxtLink>
@@ -107,7 +108,7 @@ const login = async () => {
                     <div>
                       <NuxtLink
                         to="/auth/forget-password"
-                        class="text-primary text-decoration-none text-body-1 opacity-1 font-weight-medium"
+                        class="text-white text-decoration-none text-body-1 opacity-1"
                       >
                         {{ $t("auth.signup") }}
                       </NuxtLink>
@@ -122,3 +123,8 @@ const login = async () => {
     </v-container>
   </div>
 </template>
+<style lang="scss">
+.color-fixed-textfield * {
+  color: white !important;
+}
+</style>

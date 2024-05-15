@@ -3,6 +3,8 @@
 import LinkCards from "~/components/dashboard/LinkCards.vue";
 import Process from "~/components/dashboard/Process.vue";
 import Requests from "~/components/dashboard/Requests.vue";
+const { data } = useAuth();
+console.log(data);
 </script>
 <template>
   <v-row>
