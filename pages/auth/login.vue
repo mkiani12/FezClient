@@ -14,9 +14,9 @@ useHead({
   title: "Login",
 });
 
-const checkbox = ref(true);
 const email = ref("");
 const password = ref("");
+const passwordVisibility = ref(false);
 const loading = ref(false);
 
 const login = async () => {
@@ -68,8 +68,14 @@ const login = async () => {
                   <v-text-field
                     v-model="password"
                     :label="$t('auth.password')"
-                    type="password"
+                    :type="passwordVisibility ? 'text' : 'password'"
                     color="primary"
+                    :append-inner-icon="
+                      passwordVisibility ? 'mdi-eye-off' : 'mdi-eye'
+                    "
+                    @click:append-inner="
+                      passwordVisibility = !passwordVisibility
+                    "
                     @keydown.enter="login"
                   ></v-text-field>
                 </v-col>

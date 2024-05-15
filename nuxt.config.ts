@@ -33,7 +33,7 @@ export default defineNuxtConfig({
           method: "post",
         },
         signIn: {
-          path: "/auth/entrance",
+          path: "/auth/login",
           method: "post",
         },
         signUp: {
