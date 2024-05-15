@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 dotenv.config({
-  path: `./env/main.${process.env.NODE_ENV}.env`,
+  path: `./env/.env.${process.env.NODE_ENV}.local`,
   override: false,
 });
 // https://nuxt.com/docs/api/configuration/nuxt-config
