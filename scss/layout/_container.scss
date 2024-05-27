@@ -24,7 +24,7 @@ html {
 .page-wrapper {
   min-height: calc(100vh - 100px);
   padding: 24px;
-  padding-bottom: 30px;
+  padding-bottom: 0px;
 
   @media screen and (max-width: 600px) {
     padding: 10px;
@@ -138,4 +138,17 @@ $sizes: (
   &:hover {
     color: rgb(var(--v-theme-primary));
   }
+}
+
+.f-main-container {
+  background-image: url("/images/background/main-bg.jpeg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.f-main-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  height: 100%;
+  width: 100%;
 }

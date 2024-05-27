@@ -21,50 +21,41 @@ export interface menu {
 }
 
 const sidebarItem: menu[] = [
-  { header: "خانه" },
   {
-    title: "داشبورد",
-    icon: LayoutDashboardIcon,
+    title: "Dashboard",
+    icon: "mdi-bed-outline",
     to: "/",
   },
   {
-    title: "لیست مدارک سازمانی",
-    icon: PaperclipIcon,
-    to: "/forms/list/documents",
+    title: "Dashboard",
+    icon: "mdi-account-edit-outline",
+    to: "/first",
   },
-  { header: "سیستم ها و روش ها" },
   {
-    title: "ساخت روند",
-    icon: CopyIcon,
-    to: "/process",
+    title: "Dashboard",
+    icon: "mdi-bed-outline",
+    to: "/auth/login",
   },
-  { header: "فرم ها" },
   {
-    title: "فرم ها",
-    icon: FormsIcon,
-    to: "/forms",
+    title: "Dashboard",
+    icon: "mdi-bed-outline",
+    to: "/auth/login",
   },
-  // {
-  //   title: "Typography",
-  //   icon: TypographyIcon,
-  //   to: "/ui/typography",
-  // },
-  // {
-  //   title: "Shadow",
-  //   icon: CopyIcon,
-  //   to: "/ui/shadow",
-  // },
-  // { header: "Extra" },
-  // {
-  //   title: "Icons",
-  //   icon: MoodHappyIcon,
-  //   to: "/icons",
-  // },
-  // {
-  //   title: "Sample Page",
-  //   icon: ApertureIcon,
-  //   to: "/sample-page",
-  // },
+  {
+    title: "Dashboard",
+    icon: "mdi-bed-outline",
+    to: "/auth/login",
+  },
+  {
+    title: "Dashboard",
+    icon: "mdi-bed-outline",
+    to: "/auth/login",
+  },
+  {
+    title: "Dashboard",
+    icon: "mdi-bed-outline",
+    to: "/auth/login",
+  },
 ];
 
 export default sidebarItem;

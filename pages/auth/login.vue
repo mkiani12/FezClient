@@ -107,7 +107,7 @@ const login = async () => {
                     </div>
                     <div>
                       <NuxtLink
-                        to="/auth/forget-password"
+                        to="/auth/signup"
                         class="text-white text-decoration-none text-body-1 opacity-1"
                       >
                         {{ $t("auth.signup") }}

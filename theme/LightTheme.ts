@@ -1,6 +1,7 @@
 import type { ThemeTypes } from "@/types/themeTypes/ThemeType";
+import type { ThemeDefinition } from "vuetify";
 
-const LightTheme: ThemeTypes = {
+const LightTheme: ThemeTypes & ThemeDefinition = {
   name: "LightTheme",
   dark: false,
   variables: {

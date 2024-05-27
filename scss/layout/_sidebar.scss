@@ -1,23 +1,15 @@
 /*This is for the logo*/
 .leftSidebar {
   box-shadow: none !important;
-  border-left: 1px solid rgb(var(--v-theme-borderColorLight));
-  .logo {
-    padding-right: 7px;
-  }
 
-  .mini-icon {
-    display: none;
-  }
-
-  .mini-text {
-    display: block;
+  .v-navigation-drawer__content {
+    overflow: hidden !important;
   }
 }
 
 /*This is for the Vertical sidebar*/
 .scrollnavbar {
-  height: calc(100vh - 80px);
+  height: calc(100vh - 100px);
 
   .userbottom {
     position: fixed;
