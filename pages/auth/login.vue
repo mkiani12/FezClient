@@ -50,7 +50,7 @@ const login = async () => {
           >
             <v-card-item class="pa-sm-8">
               <div class="d-flex justify-center py-4 mb-12">
-                <LayoutFullLogoDynamicLogo />
+                <LayoutFullLogoDynamicLogo width="188" />
               </div>
 
               <v-row class="d-flex mb-3">
@@ -83,7 +83,7 @@ const login = async () => {
 
                 <v-col cols="12">
                   <v-btn
-                    color="white"
+                    color="lightprimary"
                     size="large"
                     block
                     flat

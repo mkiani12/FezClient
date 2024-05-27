@@ -10,7 +10,7 @@ const { dir } = localeProperties.value;
         <LayoutFullMain />
         <v-main class="mr-md-6 mx-2 mx-md-0 pb-1 h-100">
           <ToolsVGlassCard class="h-100">
-            <v-card-text>
+            <v-card-text class="h-100">
               <NuxtPage />
             </v-card-text>
           </ToolsVGlassCard>

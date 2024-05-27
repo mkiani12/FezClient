@@ -23,11 +23,11 @@ export interface menu {
 const sidebarItem: menu[] = [
   {
     title: "Dashboard",
-    icon: "mdi-bed-outline",
+    icon: "mdi-home-outline",
     to: "/",
   },
   {
-    title: "Dashboard",
+    title: "First",
     icon: "mdi-account-edit-outline",
     to: "/first",
   },
