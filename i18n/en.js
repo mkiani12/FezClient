@@ -6,6 +6,7 @@ export default {
     "forgot-password": "Forgot Password ?",
     signup: "Sign Up",
     or: "Or",
+    fullname: "Full Name",
     firstname: "First Name",
     lastname: "Last Name",
     "google-signup": "Sign Up with Google",

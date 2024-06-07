@@ -14,8 +14,7 @@ useHead({
   title: "Signup to FEZtool",
 });
 
-const firstName = ref("");
-const lastName = ref("");
+const fullName = ref("");
 const email = ref("");
 const password = ref("");
 const passwordVisibility = ref(false);
@@ -24,6 +23,7 @@ const loading = ref(false);
 const signup = async () => {
   loading.value = true;
   const credential = {
+    name: fullName.value,
     email: email.value,
     password: password.value,
   };
@@ -56,20 +56,11 @@ const signup = async () => {
               </div>
 
               <v-row class="d-flex mb-3">
-                <v-col cols="12" md="6">
+                <v-col cols="12">
                   <v-text-field
-                    v-model="firstName"
+                    v-model="fullName"
                     class="color-fixed-textfield"
-                    :label="$t('auth.firstname')"
-                    color="white"
-                    theme="dark"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-text-field
-                    v-model="lastName"
-                    class="color-fixed-textfield"
-                    :label="$t('auth.lastname')"
+                    :label="$t('auth.fullname')"
                     color="white"
                     theme="dark"
                   ></v-text-field>

@@ -22,7 +22,7 @@ const loading = ref(false);
 const login = async () => {
   loading.value = true;
   const credential = {
-    email: email.value,
+    username: email.value,
     password: password.value,
   };
   signIn(credential, { callbackUrl: "/" })
