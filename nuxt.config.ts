@@ -17,6 +17,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@vueuse/nuxt",
     "@nuxtjs/i18n",
+    "@nuxtjs/google-fonts",
   ],
   plugins: ["~/plugins/plugins"],
 
@@ -63,7 +64,7 @@ export default defineNuxtConfig({
       // },
     },
     globalAppMiddleware: {
-      isEnabled: true,
+      isEnabled: false,
     },
   },
 

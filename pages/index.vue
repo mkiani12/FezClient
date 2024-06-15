@@ -1,6 +1,5 @@
 <script setup lang="ts">
 /*Call Components*/
-import LinkCards from "~/components/dashboard/LinkCards.vue";
 import Process from "~/components/dashboard/Process.vue";
 import Requests from "~/components/dashboard/Requests.vue";
 const { data } = useAuth();
@@ -11,15 +10,35 @@ console.log(data);
     <v-col cols="12">
       <v-row>
         <v-col cols="12">
-          <LinkCards />
+          <ToolsVGlassCard transparent>
+            <v-card-text :class="true ? 'text-right' : 'text-left'">
+              <v-btn variant="outlined" icon color="white">
+                <v-icon> mdi-account-outline </v-icon>
+              </v-btn>
+            </v-card-text>
+          </ToolsVGlassCard>
         </v-col>
         <!-- Sales overview -->
-        <v-col cols="12" lg="8">
-          <Process />
+        <v-col cols="12">
+          <ToolsVGlassCard transparent>
+            <v-card-title class="pa-7 text-h3"> Recent projects </v-card-title>
+            <v-card-text>
+              <Process />
+            </v-card-text>
+          </ToolsVGlassCard>
         </v-col>
         <!-- Yearly Breakup / Monthly Earnings -->
+        <v-col cols="12" lg="8">
+          <ToolsVGlassCard transparent>
+            <v-card-title class="pa-7 text-h3"> Climet Change </v-card-title>
+            <v-card-text> </v-card-text>
+          </ToolsVGlassCard>
+        </v-col>
         <v-col cols="12" lg="4">
-          <Requests />
+          <ToolsVGlassCard transparent>
+            <v-card-title class="pa-7 text-h3"> Documents </v-card-title>
+            <v-card-text> </v-card-text>
+          </ToolsVGlassCard>
         </v-col>
       </v-row>
     </v-col>

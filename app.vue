@@ -5,5 +5,6 @@
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
+    <SharedNotifier />
   </div>
 </template>

@@ -1,9 +1,9 @@
 // Validation and Media Rules Mixin
 export const useValidation = () => {
-  const $t = (s: string) => s;
+  const { t: $t } = useI18n();
   const validationRules = {
     required: (v: string): boolean | string =>
-      !!v || "لطفا فیلد مورد نظر را تکمیل کنید",
+      !!v || $t("form_validation.required"),
     requiredArray: (v: string): boolean | string =>
       v.length > 0 || "لطفا فیلد مورد نظر را تکمیل کنید",
     select: (v: string): boolean | string =>
