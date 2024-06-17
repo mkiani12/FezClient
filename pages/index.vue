@@ -1,7 +1,6 @@
 <script setup lang="ts">
 /*Call Components*/
 import Process from "~/components/dashboard/Process.vue";
-import Requests from "~/components/dashboard/Requests.vue";
 const { data } = useAuth();
 console.log(data);
 </script>

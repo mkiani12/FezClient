@@ -21,6 +21,14 @@ export default defineNuxtConfig({
   ],
   plugins: ["~/plugins/plugins"],
 
+  googleFonts: {
+    outputDir: "assets",
+    preload: true,
+    families: {
+      Poppins: true,
+    },
+  },
+
   auth: {
     baseURL: process.env.BASE_URL,
     provider: {
@@ -42,7 +50,7 @@ export default defineNuxtConfig({
           method: "post",
         },
         getSession: {
-          path: "/auth/session",
+          path: "/user/",
           method: "get",
         },
       },
@@ -64,7 +72,7 @@ export default defineNuxtConfig({
       // },
     },
     globalAppMiddleware: {
-      isEnabled: false,
+      isEnabled: true,
     },
   },
 
