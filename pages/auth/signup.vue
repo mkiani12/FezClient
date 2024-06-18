@@ -10,8 +10,10 @@ definePageMeta({
   },
 });
 
+const { t: $t } = useI18n();
+
 useHead({
-  title: "Signup to FEZtool",
+  title: $t("auth.signup-fez"),
 });
 const router = useRouter();
 const notify = useSnackbarStore();

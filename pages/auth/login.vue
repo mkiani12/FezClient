@@ -10,8 +10,10 @@ definePageMeta({
   },
 });
 
+const { t: $t } = useI18n();
+
 useHead({
-  title: "Login",
+  title: $t("auth.login"),
 });
 
 const email = ref("");

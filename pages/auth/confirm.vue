@@ -10,8 +10,10 @@ definePageMeta({
   },
 });
 
+const { t: $t } = useI18n();
+
 useHead({
-  title: "Confirm your email",
+  title: $t("auth.confirm-your-mail"),
 });
 const route = useRoute();
 const router = useRouter();
@@ -41,7 +43,7 @@ const confirm = () => {
     .post("/auth/confirm", credentials)
     .then((result) => {
       console.log(result);
-      notify.showMessage("Email confirmed successfully", "success");
+      notify.showMessage($t("auth.messages.mail-confirmed"), "success");
       loading.value = false;
       router.push("/auth/login");
     })
@@ -64,7 +66,7 @@ const resendConfirmCode = () => {
   axios
     .post(`/auth/resend-confirmation?email=${route.query.email}`)
     .then((result) => {
-      notify.showMessage("Confirmation code was successfully sent!", "success");
+      notify.showMessage($t("auth.messages.confirmation-sent"), "success");
       startCountdown();
       resendLoading.value = false;
     })
@@ -106,7 +108,9 @@ onBeforeMount(() => {
 
               <v-row class="d-flex mb-3">
                 <v-col cols="12">
-                  <h2 class="position-relative z-1">Confirm your Email</h2>
+                  <h2 class="position-relative z-1">
+                    {{ $t("auth.confirm-your-mail") }}
+                  </h2>
                 </v-col>
 
                 <v-col cols="12">
@@ -128,7 +132,7 @@ onBeforeMount(() => {
                     v-slot="{ totalSeconds }"
                   >
                     <h5 class="position-relative z-1 text-center">
-                      Resend code in {{ totalSeconds }} seconds later
+                      {{ $t("auth.resend-in", { totalSeconds }) }}
                     </h5>
                   </VueCountdown>
                   <v-btn
@@ -140,7 +144,7 @@ onBeforeMount(() => {
                     :loading="resendLoading"
                     @click="resendConfirmCode"
                   >
-                    Resend Verification Code
+                    {{ $t("auth.resend-code") }}
                   </v-btn>
                 </v-col>
 
@@ -154,7 +158,7 @@ onBeforeMount(() => {
                     :disabled="otp.length < 5"
                     @click="confirm"
                   >
-                    {{ $t("auth.signup") }}
+                    {{ $t("auth.check-confirm") }}
                   </v-btn>
                 </v-col>
 

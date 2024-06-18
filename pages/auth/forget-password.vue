@@ -9,18 +9,142 @@ definePageMeta({
   },
 });
 
-const username = ref("");
-const loading = ref(false);
+const { t: $t } = useI18n();
 
-const renewPassword = async () => {
+useHead({
+  title: $t("auth.reset-your-password"),
+});
+
+const { validationRules } = useValidation();
+const route = useRoute();
+const router = useRouter();
+const axios = useApi();
+const notify = useSnackbarStore();
+
+const step = ref(1);
+
+// step 1: Reset password
+
+const email = ref("");
+const loading = ref(false);
+const formValidated = ref(false);
+
+const resetPassword = () => {
   loading.value = true;
-  const credential = {
-    username: username.value,
+  axios
+    .get(`/auth/send-reset-password-code?email=${email.value}`)
+    .then((result) => {
+      console.log(result);
+      step.value = 2;
+      loading.value = false;
+    })
+    .catch((e) => {
+      if (e.message) {
+        const { detail } = e.response.data;
+        if (detail) {
+          console.log(detail);
+          notify.showMessage(detail, "error");
+        }
+      } else {
+        console.log(e);
+      }
+      loading.value = false;
+    });
+};
+
+// step 2: Check confirm code
+
+const otp = ref("");
+const counting = ref(false);
+const resendLoading = ref(false);
+const checkCodeLoading = ref(false);
+
+const resendConfirmCode = () => {
+  resendLoading.value = true;
+  counting.value = true;
+  axios
+    .get(`/auth/send-reset-password-code?email=${email.value}`)
+    .then((result) => {
+      console.log(result);
+      resendLoading.value = false;
+    })
+    .catch((e) => {
+      if (e.message) {
+        const { detail } = e.response.data;
+        if (detail) {
+          console.log(detail);
+          notify.showMessage(detail, "error");
+        }
+      } else {
+        console.log(e);
+      }
+      resendLoading.value = false;
+    });
+};
+
+const onCountdownEnd = () => {
+  counting.value = false;
+};
+
+const checkCode = () => {
+  checkCodeLoading.value = true;
+  axios
+    .post("/")
+    .then((result) => {
+      checkCodeLoading.value = false;
+      step.value = 3;
+    })
+    .catch((e) => {
+      if (e.message) {
+        const { detail } = e.response.data;
+        if (detail) {
+          console.log(detail);
+          notify.showMessage(detail, "error");
+        }
+      } else {
+        console.log(e);
+      }
+      checkCodeLoading.value = false;
+    });
+};
+
+// step 3: Reset the password
+const confirmValidated = ref(false);
+const newPassword = ref("");
+const repeatPassword = ref("");
+const confirmLoading = ref(false);
+
+const confirm = () => {
+  confirmLoading.value = true;
+
+  const resetPasswordData = {
+    code: otp.value,
+    email: email.value,
+    password: newPassword.value,
   };
 
-  console.log(credential);
-
-  loading.value = false;
+  axios
+    .post("/auth/reset-password", resetPasswordData)
+    .then((result) => {
+      console.log(result);
+      notify.showMessage($t("auth.messages.password-changed"), "success");
+      setTimeout(() => {
+        router.push("auth/login");
+      }, 2000);
+      confirmLoading.value = false;
+    })
+    .catch((e) => {
+      if (e.message) {
+        const { detail } = e.response.data;
+        if (detail) {
+          console.log(detail);
+          notify.showMessage(detail, "error");
+        }
+      } else {
+        console.log(e);
+      }
+      confirmLoading.value = false;
+    });
 };
 </script>
 <template>
@@ -28,60 +152,241 @@ const renewPassword = async () => {
     <v-container fluid class="pa-3">
       <v-row class="h-100vh d-flex justify-center align-center">
         <v-col cols="12" lg="4" xl="3" class="d-flex align-center">
-          <v-card
+          <div
             rounded="md"
             elevation="10"
             class="px-sm-1 px-0 withbg mx-auto"
             max-width="500"
           >
             <v-card-item class="pa-sm-8">
-              <div class="d-flex justify-center py-4">
-                <LayoutFullLogo />
-              </div>
-              <div class="text-body-1 text-muted mb-3">
-                برای بازنشانی گزرواژه خود نام کاربری را وارد کنید.
+              <div class="d-flex justify-center py-4 mb-12">
+                <LayoutFullLogoDynamicLogo width="188" />
               </div>
 
-              <v-row class="d-flex mb-3">
-                <v-col cols="12">
-                  <v-text-field
-                    v-model="username"
-                    label="نام کاربری"
-                    color="primary"
-                  ></v-text-field>
-                </v-col>
+              <v-stepper
+                class="steper-header-elevation-0"
+                v-model="step"
+                :items="[
+                  $t('auth.enter-mail'),
+                  $t('auth.check-confirm'),
+                  $t('auth.reset-password'),
+                ]"
+                hide-actions
+                elevation="0"
+              >
+                <template v-slot:item.1>
+                  <v-form v-model="formValidated">
+                    <v-row class="d-flex mb-3">
+                      <v-col cols="12">
+                        <h2 class="position-relative z-1">
+                          {{ $t("auth.enter-mail") }}
+                        </h2>
+                      </v-col>
 
-                <v-col cols="12">
-                  <div class="text-body-1 text-muted mb-3">
-                    در صورت عدم دسترسی به شماره همراه و یا فراموشی نام کاربری
-                    خود با پشتیبانی تماس بگیرید.
-                  </div>
-                  <div>
-                    <NuxtLink
-                      to="/auth/login"
-                      class="text-primary text-decoration-none text-body-1 opacity-1 font-weight-medium"
-                    >
-                      بازگشت
-                    </NuxtLink>
-                  </div>
-                </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="email"
+                          :rules="[
+                            validationRules.required,
+                            validationRules.email,
+                          ]"
+                          class="color-fixed-textfield"
+                          :label="$t('auth.email')"
+                          color="white"
+                          theme="dark"
+                        ></v-text-field>
+                      </v-col>
 
-                <v-col cols="12">
-                  <v-btn
-                    size="large"
-                    block
-                    flat
-                    :loading="loading"
-                    @click="renewPassword"
-                  >
-                    بازنشانی
-                  </v-btn>
-                </v-col>
-              </v-row>
+                      <v-col cols="12">
+                        <v-btn
+                          color="lightprimary"
+                          size="large"
+                          block
+                          flat
+                          :loading="loading"
+                          :disabled="!formValidated"
+                          @click="resetPassword"
+                        >
+                          {{ $t("auth.reset-password") }}
+                        </v-btn>
+                      </v-col>
+
+                      <v-col cols="12" class="pt-0">
+                        <div class="z-10 position-relative">
+                          <div class="mr-sm-auto">
+                            <NuxtLink
+                              to="/auth/login"
+                              class="text-white text-decoration-none text-body-1 opacity-1"
+                            >
+                              {{ $t("auth.remember-password") }}
+                            </NuxtLink>
+                          </div>
+                        </div>
+                      </v-col>
+                    </v-row>
+                  </v-form>
+                </template>
+                <template v-slot:item.2>
+                  <v-row class="d-flex mb-3">
+                    <v-col cols="12">
+                      <h2 class="position-relative z-1">
+                        {{ $t("auth.check-confirm") }}
+                      </h2>
+                    </v-col>
+
+                    <v-col cols="12">
+                      <VOtpInput
+                        v-model="otp"
+                        class="mx-n2"
+                        length="5"
+                        placeholder="*"
+                        max-width="100%"
+                        height="80"
+                        @finish="checkCode"
+                      ></VOtpInput>
+                    </v-col>
+                    <v-col cols="12">
+                      <VueCountdown
+                        v-if="counting"
+                        :time="60000"
+                        @end="onCountdownEnd"
+                        v-slot="{ totalSeconds }"
+                      >
+                        <h5 class="position-relative z-1 text-center">
+                          {{ $t("auth.resend-in", { totalSeconds }) }}
+                        </h5>
+                      </VueCountdown>
+
+                      <v-btn
+                        v-else
+                        color="lightprimary"
+                        size="large"
+                        block
+                        flat
+                        :loading="resendLoading"
+                        @click="resendConfirmCode"
+                      >
+                        {{ $t("auth.resend-code") }}
+                      </v-btn>
+                    </v-col>
+
+                    <v-col class="py-1" ols="12">
+                      <h5
+                        class="position-relative z-1 text-center cursor-pointer"
+                        @click="step = 1"
+                      >
+                        {{ $t("auth.change-mail") }}
+                      </h5>
+                    </v-col>
+
+                    <v-col cols="12">
+                      <v-btn
+                        color="lightprimary"
+                        size="large"
+                        block
+                        flat
+                        :loading="checkCodeLoading"
+                        :disabled="otp.length < 5"
+                        @click="checkCode"
+                      >
+                        {{ $t("auth.check-confirm") }}
+                      </v-btn>
+                    </v-col>
+
+                    <v-col cols="12" class="pt-0">
+                      <div class="z-10 position-relative">
+                        <div class="mr-sm-auto">
+                          <NuxtLink
+                            to="/auth/login"
+                            class="text-white text-decoration-none text-body-1 opacity-1"
+                          >
+                            {{ $t("auth.remember-password") }}
+                          </NuxtLink>
+                        </div>
+                      </div>
+                    </v-col>
+                  </v-row>
+                </template>
+                <template v-slot:item.3>
+                  <v-form v-model="confirmValidated">
+                    <v-row class="d-flex mb-3">
+                      <v-col cols="12">
+                        <h2 class="position-relative z-1">
+                          {{ $t("auth.reset-your-password") }}
+                        </h2>
+                      </v-col>
+
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="newPassword"
+                          :rules="[
+                            validationRules.required,
+                            validationRules.password,
+                          ]"
+                          class="color-fixed-textfield"
+                          :label="$t('auth.new-password')"
+                          color="white"
+                          theme="dark"
+                        ></v-text-field>
+                      </v-col>
+
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="repeatPassword"
+                          :rules="[
+                            validationRules.required,
+                            (v) =>
+                              v == newPassword || $t('auth.password-match'),
+                          ]"
+                          class="color-fixed-textfield"
+                          :label="$t('auth.repeat-password')"
+                          color="white"
+                          theme="dark"
+                        ></v-text-field>
+                      </v-col>
+
+                      <v-col cols="12">
+                        <v-btn
+                          color="lightprimary"
+                          size="large"
+                          block
+                          flat
+                          :loading="confirmLoading"
+                          :disabled="!confirmValidated"
+                          @click="confirm"
+                        >
+                          {{ $t("auth.reset-password") }}
+                        </v-btn>
+                      </v-col>
+
+                      <v-col cols="12" class="pt-0">
+                        <div class="z-10 position-relative">
+                          <div class="mr-sm-auto">
+                            <NuxtLink
+                              to="/auth/login"
+                              class="text-white text-decoration-none text-body-1 opacity-1"
+                            >
+                              {{ $t("auth.remember-password") }}
+                            </NuxtLink>
+                          </div>
+                        </div>
+                      </v-col>
+                    </v-row>
+                  </v-form>
+                </template>
+              </v-stepper>
             </v-card-item>
-          </v-card>
+          </div>
         </v-col>
       </v-row>
     </v-container>
   </div>
 </template>
+<style lang="scss">
+.color-fixed-textfield * {
+  color: white !important;
+}
+.steper-header-elevation-0 .v-stepper-header {
+  box-shadow: none !important;
+}
+</style>
