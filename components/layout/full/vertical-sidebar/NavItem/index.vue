@@ -10,7 +10,6 @@ const props = defineProps({ item: Object });
     :external="item.type === 'external'"
     class="f-menu-item text-center"
     exact-active-class="f-active-menu"
-    custom
   >
     <v-tooltip :text="item.title">
       <template v-slot:activator="{ props }">

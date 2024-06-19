@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import VueCountdown from "@chenfengyuan/vue-countdown";
 /*-For Set Blank Layout-*/
 definePageMeta({
   layout: "blank",
@@ -39,7 +40,8 @@ const resetPassword = () => {
       loading.value = false;
     })
     .catch((e) => {
-      if (e.message) {
+      loading.value = false;
+      if (e.response) {
         const { detail } = e.response.data;
         if (detail) {
           console.log(detail);
@@ -48,7 +50,6 @@ const resetPassword = () => {
       } else {
         console.log(e);
       }
-      loading.value = false;
     });
 };
 
@@ -69,7 +70,8 @@ const resendConfirmCode = () => {
       resendLoading.value = false;
     })
     .catch((e) => {
-      if (e.message) {
+      resendLoading.value = false;
+      if (e.response) {
         const { detail } = e.response.data;
         if (detail) {
           console.log(detail);
@@ -78,7 +80,6 @@ const resendConfirmCode = () => {
       } else {
         console.log(e);
       }
-      resendLoading.value = false;
     });
 };
 
@@ -88,14 +89,21 @@ const onCountdownEnd = () => {
 
 const checkCode = () => {
   checkCodeLoading.value = true;
+  const checkCodeData = {
+    email: email.value,
+    code: otp.value,
+  };
   axios
-    .post("/")
+    .post("/auth/check-otp", checkCodeData)
     .then((result) => {
+      console.log(result);
+
       checkCodeLoading.value = false;
       step.value = 3;
     })
     .catch((e) => {
-      if (e.message) {
+      checkCodeLoading.value = false;
+      if (e.response) {
         const { detail } = e.response.data;
         if (detail) {
           console.log(detail);
@@ -104,7 +112,6 @@ const checkCode = () => {
       } else {
         console.log(e);
       }
-      checkCodeLoading.value = false;
     });
 };
 
@@ -113,6 +120,7 @@ const confirmValidated = ref(false);
 const newPassword = ref("");
 const repeatPassword = ref("");
 const confirmLoading = ref(false);
+const showPassword = ref(false);
 
 const confirm = () => {
   confirmLoading.value = true;
@@ -129,12 +137,13 @@ const confirm = () => {
       console.log(result);
       notify.showMessage($t("auth.messages.password-changed"), "success");
       setTimeout(() => {
-        router.push("auth/login");
+        router.push("/auth/login");
       }, 2000);
       confirmLoading.value = false;
     })
     .catch((e) => {
-      if (e.message) {
+      confirmLoading.value = false;
+      if (e.response) {
         const { detail } = e.response.data;
         if (detail) {
           console.log(detail);
@@ -143,7 +152,6 @@ const confirm = () => {
       } else {
         console.log(e);
       }
-      confirmLoading.value = false;
     });
 };
 </script>
@@ -175,7 +183,10 @@ const confirm = () => {
                 elevation="0"
               >
                 <template v-slot:item.1>
-                  <v-form v-model="formValidated">
+                  <v-form
+                    v-model="formValidated"
+                    @submit.prevent="resetPassword"
+                  >
                     <v-row class="d-flex mb-3">
                       <v-col cols="12">
                         <h2 class="position-relative z-1">
@@ -253,7 +264,9 @@ const confirm = () => {
                         v-slot="{ totalSeconds }"
                       >
                         <h5 class="position-relative z-1 text-center">
-                          {{ $t("auth.resend-in", { totalSeconds }) }}
+                          {{
+                            $t("auth.resend-in", { totalSeconds: totalSeconds })
+                          }}
                         </h5>
                       </VueCountdown>
 
@@ -273,7 +286,7 @@ const confirm = () => {
                     <v-col class="py-1" ols="12">
                       <h5
                         class="position-relative z-1 text-center cursor-pointer"
-                        @click="step = 1"
+                        @click="(step = 1), (counting = false)"
                       >
                         {{ $t("auth.change-mail") }}
                       </h5>
@@ -308,7 +321,7 @@ const confirm = () => {
                   </v-row>
                 </template>
                 <template v-slot:item.3>
-                  <v-form v-model="confirmValidated">
+                  <v-form v-model="confirmValidated" @submit.prevent="confirm">
                     <v-row class="d-flex mb-3">
                       <v-col cols="12">
                         <h2 class="position-relative z-1">
@@ -325,8 +338,15 @@ const confirm = () => {
                           ]"
                           class="color-fixed-textfield"
                           :label="$t('auth.new-password')"
+                          :type="showPassword ? 'text' : 'password'"
+                          :append-inner-icon="
+                            showPassword
+                              ? 'mdi-eye-off-outline'
+                              : 'mdi-eye-outline'
+                          "
                           color="white"
                           theme="dark"
+                          @click:append-inner="showPassword = !showPassword"
                         ></v-text-field>
                       </v-col>
 
@@ -340,9 +360,25 @@ const confirm = () => {
                           ]"
                           class="color-fixed-textfield"
                           :label="$t('auth.repeat-password')"
+                          :type="showPassword ? 'text' : 'password'"
+                          :append-inner-icon="
+                            showPassword
+                              ? 'mdi-eye-off-outline'
+                              : 'mdi-eye-outline'
+                          "
                           color="white"
                           theme="dark"
+                          @click:append-inner="showPassword = !showPassword"
                         ></v-text-field>
+                      </v-col>
+
+                      <v-col class="py-1" ols="12">
+                        <h5
+                          class="position-relative z-1 text-center cursor-pointer"
+                          @click="(step = 1), (counting = false)"
+                        >
+                          {{ $t("auth.change-mail") }}
+                        </h5>
                       </v-col>
 
                       <v-col cols="12">

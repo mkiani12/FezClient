@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 const { signIn } = useAuth();
+const data = useAuth();
+console.log(data);
+
 /*-For Set Blank Layout-*/
 definePageMeta({
   layout: "blank",
@@ -73,7 +76,9 @@ const login = async () => {
                     :type="passwordVisibility ? 'text' : 'password'"
                     color="white"
                     :append-inner-icon="
-                      passwordVisibility ? 'mdi-eye-off' : 'mdi-eye'
+                      passwordVisibility
+                        ? 'mdi-eye-off-outline'
+                        : 'mdi-eye-outline'
                     "
                     theme="dark"
                     @click:append-inner="
