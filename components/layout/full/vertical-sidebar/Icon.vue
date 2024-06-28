@@ -8,7 +8,7 @@ const props = defineProps({ item: Object, size: String });
       :is="item"
       :size="size"
       fill="currentColor"
-      stroke-width="1.5"
+      stroke-width="1"
       class="iconClass"
     ></component>
   </template>

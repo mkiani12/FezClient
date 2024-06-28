@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     "@nuxtjs/i18n",
     "@nuxtjs/google-fonts",
+    "unplugin-icons/nuxt",
   ],
   plugins: ["~/plugins/plugins"],
 
