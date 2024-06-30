@@ -9,7 +9,7 @@ const props = defineProps<{
 <template>
   <v-card
     v-bind="cardProps"
-    class="rounded-xl"
+    class="glass-card rounded-xl"
     :class="transparent ? 'f-glass-tp-card' : 'f-glass-card'"
   >
     <slot></slot>

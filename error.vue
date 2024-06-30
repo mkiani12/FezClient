@@ -1,24 +1,39 @@
 <script setup lang="ts">
-// Page title
-const title = ref("404-Page Not Found");
 useHead({
-  meta: [{ content: title }],
-  titleTemplate: (titleChunk) => {
-    return titleChunk
-      ? `${titleChunk} - 404-Page Not Found`
-      : "Modernize - Nuxt3 Typescript based Free Admin Dashboard Template";
-  },
+  title: "404 not found",
 });
+import wLogo from "~/assets/logo/white-logo.png";
 </script>
 <template>
-  <div class="d-flex justify-center align-center text-center h-100vh">
-    <div>
-      <img src="/images/background/main-bg.jpeg" width="500" alt="404" />
-      <h1 class="text-h1 pt-3">Opps!!!</h1>
-      <h4 class="text-h4 my-8">
-        This page you are looking for could not be found.
-      </h4>
-      <v-btn flat color="primary" class="mb-4" to="/">Go Back to Home</v-btn>
-    </div>
+  <div class="authentication">
+    <v-container fluid class="pa-3">
+      <v-row class="h-100vh d-flex justify-center align-center">
+        <v-col cols="12" lg="4" xl="3" class="d-flex align-center">
+          <div
+            rounded="md"
+            elevation="10"
+            class="px-sm-1 px-0 z-1 withbg mx-auto"
+            max-width="500"
+          >
+            <v-empty-state
+              headline="Whoops, 404"
+              title="Page not found"
+              text="The page you were looking for does not exist"
+            >
+              <template #media>
+                <div>
+                  <v-img class="my-8" height="180" :src="wLogo"></v-img>
+                </div>
+              </template>
+            </v-empty-state>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
+<style lang="scss">
+.color-fixed-textfield * {
+  color: white !important;
+}
+</style>

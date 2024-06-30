@@ -1,45 +1,20 @@
 <script setup lang="ts">
-/*Call Components*/
-import Process from "~/components/dashboard/Process.vue";
-const data = useAuth();
-console.log(data);
+import wLogo from "~/assets/logo/white-logo.png";
 </script>
 <template>
-  <v-row>
+  <v-row class="h-100">
     <v-col cols="12">
-      <v-row>
-        <v-col cols="12">
-          <ToolsVGlassCard transparent>
-            <v-card-text :class="true ? 'text-right' : 'text-left'">
-              <v-btn variant="outlined" icon color="white">
-                <v-icon> mdi-account-outline </v-icon>
-              </v-btn>
-            </v-card-text>
-          </ToolsVGlassCard>
-        </v-col>
-        <!-- Sales overview -->
-        <v-col cols="12">
-          <ToolsVGlassCard transparent>
-            <v-card-title class="pa-7 text-h3"> Recent projects </v-card-title>
-            <v-card-text>
-              <Process />
-            </v-card-text>
-          </ToolsVGlassCard>
-        </v-col>
-        <!-- Yearly Breakup / Monthly Earnings -->
-        <v-col cols="12" lg="8">
-          <ToolsVGlassCard transparent>
-            <v-card-title class="pa-7 text-h3"> Climet Change </v-card-title>
-            <v-card-text> </v-card-text>
-          </ToolsVGlassCard>
-        </v-col>
-        <v-col cols="12" lg="4">
-          <ToolsVGlassCard transparent>
-            <v-card-title class="pa-7 text-h3"> Documents </v-card-title>
-            <v-card-text> </v-card-text>
-          </ToolsVGlassCard>
-        </v-col>
-      </v-row>
+      <v-empty-state
+        headline="Big things are ahead!"
+        title="The Climate Change service is Coming Soon"
+        text="We're busy building something amazing and can't wait to share it with you."
+      >
+        <template #media>
+          <div>
+            <v-img class="my-8" height="180" :src="wLogo"></v-img>
+          </div>
+        </template>
+      </v-empty-state>
     </v-col>
   </v-row>
 </template>
