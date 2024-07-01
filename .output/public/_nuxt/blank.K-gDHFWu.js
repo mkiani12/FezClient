@@ -1,1 +1,0 @@
-import{_ as a,c as r,w as o,a as e,o as s,b as t,p}from"./entry.L8a4ZtuU.js";const l={};function d(f,m){const n=p,_=e("v-locale-provider"),c=e("v-app");return s(),r(c,null,{default:o(()=>[t(_,{rtl:""},{default:o(()=>[t(n)]),_:1})]),_:1})}const v=a(l,[["render",d]]);export{v as default};
