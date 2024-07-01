@@ -1,18 +1,3 @@
-// Outline Card
-.v-card--variant-outlined {
-  border-color: rgba(var(--v-theme-borderLight));
-  .v-divider {
-    border-color: rgba(var(--v-theme-borderLight));
-  }
-}
-
-.v-theme--dark .v-card {
-  border: 1px solid rgba(var(--v-theme-lightprimary)) !important;
-  .v-divider {
-    border-color: rgba(var(--v-theme-lightprimary)) !important;
-  }
-}
-
 .v-card-text {
   padding: $card-text-spacer;
 }
