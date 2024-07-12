@@ -1,4 +1,48 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const axios = useApi();
+const dragStart = (e: any) => {
+  console.log(e);
+};
+
+const projectList = ref<number[]>([]);
+
+const addProjectDialog = ref(false);
+const addProjectName = ref("");
+const addProjectLoading = ref(false);
+
+const addProject = () => {
+  addProjectDialog.value = false;
+  addProjectLoading.value = true;
+
+  const addProjectData = {
+    name: addProjectName.value,
+    key: "",
+  };
+
+  console.log(addProjectData);
+
+  axios
+    .post("/project/", addProjectData)
+    .then((result) => {
+      console.log(result);
+      addProjectName.value = "";
+      addProjectLoading.value = false;
+    })
+    .catch((err) => {
+      console.log(err);
+      addProjectName.value = "";
+      addProjectLoading.value = false;
+    });
+};
+
+const getProjectList = () => {
+  projectList.value = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+};
+
+onMounted(() => {
+  getProjectList();
+});
+</script>
 <template>
   <ToolsVGlassCard transparent>
     <v-card-title class="pa-4 pa-md-7 text-h2 font-weight-regular">
@@ -19,6 +63,30 @@
             label="Sort by"
             density="compact"
           ></v-select>
+          <v-dialog v-model="addProjectDialog" max-width="450">
+            <template #activator="{ props: activatorProps }">
+              <v-btn v-bind="activatorProps" class="ml-3" icon color="primary">
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </template>
+            <v-card rounded="xl" border="primary sm opacity-75">
+              <v-card-title class="px-6 pt-5"> Add Project </v-card-title>
+              <v-card-text>
+                <v-form>
+                  <v-text-field
+                    v-model="addProjectName"
+                    label="Project name"
+                  ></v-text-field>
+                </v-form>
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+
+                <v-btn text="Add Project" @click="addProject"></v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-col>
       </v-row>
       <v-row>
@@ -27,8 +95,9 @@
             <v-slide-group
               class="px-4 mx-md-n6 mx-n8 projects-slide"
               selected-class="bg-success"
+              @drag="dragStart"
             >
-              <v-slide-group-item v-for="n in 5" :key="n">
+              <v-slide-group-item v-for="project in projectList" :key="project">
                 <ToolsVGlassCard
                   class="ma-4 border-white"
                   :card-props="{ width: 350, height: 250 }"

@@ -5,11 +5,11 @@ const props = defineProps({ item: Object });
 <template>
   <!---Single Item-->
   <nuxt-link
-    v-slot="{ navigate, isExactActive }"
+    v-slot="{ navigate, isActive }"
     :to="item.to"
     :external="item.type === 'external'"
     class="f-menu-item text-center"
-    exact-active-class="f-active-menu"
+    active-class="f-active-menu"
   >
     <v-tooltip :text="item.title">
       <template #activator="{ props }">
@@ -20,7 +20,7 @@ const props = defineProps({ item: Object });
           icon
           size="70"
           class="my-1 menu-icon"
-          :color="isExactActive ? 'primary' : 'lightprimary'"
+          :color="isActive ? 'primary' : 'lightprimary'"
           @click="navigate"
         >
           <v-badge

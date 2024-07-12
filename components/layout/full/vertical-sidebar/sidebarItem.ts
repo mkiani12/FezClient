@@ -8,6 +8,7 @@ import {
 import dashboardIcon from "~icons/material-symbols-light/dashboard-outline-rounded";
 import remoteSensingIcon from "~icons/material-symbols-light/nest-remote-comfort-sensor-outline-rounded";
 import climateChangeIcon from "~icons/gg/code-climate";
+import settingIcon from "~icons/material-symbols-light/settings-outline";
 
 export interface menu {
   header?: string;
@@ -43,6 +44,12 @@ const sidebarItem: menu[] = [
     iconSize: 40,
     soon: true,
     to: "/coming-soon",
+  },
+  {
+    title: "Setting",
+    icon: settingIcon,
+    iconSize: 40,
+    to: "/setting",
   },
 ];
 

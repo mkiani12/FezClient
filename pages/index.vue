@@ -1,6 +1,6 @@
 <script setup lang="ts">
-const data = useAuth();
-console.log(data);
+const { data } = useAuth();
+console.log(data.value);
 </script>
 <template>
   <v-row>
