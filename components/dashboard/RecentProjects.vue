@@ -4,6 +4,7 @@ import type { Project } from "~/types/projects/projects";
 const axios = useApi();
 const { validationRules: rules } = useValidation();
 const notify = useSnackbarStore();
+import moment from "jalali-moment";
 
 const loading = ref(false);
 const projectList = ref<Project[]>([]);
@@ -205,7 +206,11 @@ onMounted(() => {
                       <div class="pl-2 text-body-2">
                         <p>
                           Created at:
-                          <span class="text-primary"> 11 June 2024 </span>
+                          <span class="text-primary">
+                            {{
+                              moment(project.created_at).format("DD MMMM YYYY")
+                            }}
+                          </span>
                         </p>
                         <p class="mt-2">
                           <span>

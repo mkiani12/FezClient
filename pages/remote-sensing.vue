@@ -13,6 +13,8 @@ const cruds = ref([
 
 import toolIcon from "~icons/material-symbols-light/arrow-selector-tool-outline-rounded";
 import uploadIcon from "~icons/solar/cloud-upload-broken";
+
+const chooseProjectDialog = ref(false);
 </script>
 <template>
   <v-row class="flex-column ma-0 h-100 w-100">
@@ -99,7 +101,28 @@ import uploadIcon from "~icons/solar/cloud-upload-broken";
                     Ensure that the file is in the appropriate format (e.g.,
                     JPEG, TIFF) and does not exceed the maximum size limit.
                   </p>
-                  <v-btn> Upload File or Choose one</v-btn>
+                  <v-dialog v-model="chooseProjectDialog" max-width="450">
+                    <template #activator="{ props: activatorProps }">
+                      <v-btn v-bind="activatorProps">
+                        Upload File or Choose one</v-btn
+                      >
+                    </template>
+                    <v-card rounded="xl" border="primary sm opacity-75">
+                      <v-card-title class="px-6 pt-5">
+                        Choose project
+                      </v-card-title>
+                      <v-card-text> </v-card-text>
+
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+
+                        <v-btn
+                          text="Choose"
+                          @click="chooseProjectDialog = false"
+                        ></v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
                 </v-card-text>
               </v-card>
             </v-card-item>

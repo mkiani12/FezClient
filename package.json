@@ -18,15 +18,16 @@
     "@tiptap/pm": "^2.0.0",
     "@tiptap/starter-kit": "2.4.0",
     "@tiptap/vue-3": "2.4.0",
+    "@types/moment": "^2.13.0",
     "@vueuse/core": "^10.7.2",
     "@vueuse/nuxt": "^10.7.2",
     "apexcharts": "3.49.1",
     "axios": "^1.6.5",
     "date-fns": "^3.1.0",
     "glob": "^10.4.1",
+    "jalali-moment": "^3.3.11",
     "lru-cache": "^10.2.2",
     "mitt": "^3.0.1",
-    "moment-jalali": "^0.3.9",
     "next-auth": "4.24.7",
     "rollup": "^4.0.0",
     "sass": "^1.49.9",
@@ -47,6 +48,6 @@
   "devDependencies": {
     "@iconify/json": "^2.2.223",
     "@sidebase/nuxt-auth": "^0.6.3",
-    "nuxt": "^3.9.0"
+    "nuxt": "^3.12.3"
   }
 }
