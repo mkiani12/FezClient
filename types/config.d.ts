@@ -1,5 +1,6 @@
 export {};
 import { Emitter } from "mitt";
+import { ApiKey } from "./userdata/session";
 
 interface PluginsInjections {
   $event: Emitter["emit"];
@@ -20,28 +21,5 @@ declare module "@vue/runtime-core" {
 }
 
 declare global {
-  interface JobData {
-    id?: number | string;
-    postTitle?: string;
-    project?: string;
-    postId?: number | string;
-    projectId?: number | string;
-    level?: number | string;
-    unitId?: number | string;
-    unitTitle?: string;
-    companyId?: number | string;
-    companyName?: string;
-  }
-
-  interface UserInformations {
-    firstname?: string;
-    lastname?: string;
-    UserId?: number | string;
-    NationalCode?: string;
-  }
-
-  interface SessionData {
-    userInformations?: UserInformations;
-    userPositions?: JobData[];
-  }
+  interface SessionApiKey extends ApiKey {}
 }

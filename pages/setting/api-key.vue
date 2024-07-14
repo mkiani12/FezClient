@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import type { ApiKey } from "~/types/userdata/session";
+
 const axios = useApi();
+const notify = useSnackbarStore();
+const { data } = useAuth();
 
 import copyIcon from "~icons/material-symbols-light/content-copy-outline-rounded";
 
@@ -10,18 +14,45 @@ const generateApiKey = () => {
   loading.value = true;
   axios
     .post(`/apikey/generate-apikey?name=${keyName.value}`)
-    .then((result) => {
-      console.log(result);
+    .then(({ data }) => {
+      console.log(data);
+      apiKey.value = data.key;
+      noApiKey.value = false;
       loading.value = false;
     })
-    .catch((err) => {
-      console.log(err);
+    .catch((e) => {
       loading.value = false;
+      if (e.response) {
+        const { detail } = e.response.data;
+        if (detail) {
+          console.log(detail);
+          notify.showMessage(detail, "error");
+        }
+      } else {
+        console.log(e);
+      }
     });
 };
 
-const apiKey = ref("You have to generate one first");
+const apiKey = ref<ApiKey>({
+  name: "",
+  key: "You have to generate one first",
+});
 const noApiKey = ref(true);
+
+const copyCode = () => {
+  navigator.clipboard.writeText(apiKey.value.key);
+  notify.showMessage("Copied to clipboard!", "", 1500);
+};
+
+onMounted(() => {
+  const sessionApiKey = data.value?.api_keys[0];
+  if (sessionApiKey) {
+    noApiKey.value = false;
+    apiKey.value = sessionApiKey;
+    keyName.value = apiKey.value.name;
+  }
+});
 </script>
 <template>
   <ToolsVGlassCard transparent class="h-100">
@@ -45,13 +76,14 @@ const noApiKey = ref(true);
                     v-model="keyName"
                     class="my-3"
                     label="Key name"
+                    :readonly="!noApiKey"
                   ></v-text-field>
                   <v-btn
                     class="mb-3"
                     text="Generate"
                     color="primary"
                     size="large"
-                    :disabled="keyName.length < 1"
+                    :disabled="keyName.length < 1 || !noApiKey"
                     @click="generateApiKey"
                   ></v-btn>
                 </v-form>
@@ -61,7 +93,7 @@ const noApiKey = ref(true);
               <v-col cols="12" md="7">
                 <v-form class="text-start">
                   <v-textarea
-                    :model-value="apiKey"
+                    :model-value="apiKey.key"
                     class="mb-3"
                     label="Api key"
                     readonly
@@ -72,6 +104,7 @@ const noApiKey = ref(true);
                     icon
                     color="white"
                     :disabled="noApiKey"
+                    @click="copyCode"
                   >
                     <v-icon :icon="copyIcon"></v-icon>
                   </v-btn>

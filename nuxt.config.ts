@@ -20,6 +20,7 @@ export default defineNuxtConfig({
     "@nuxtjs/google-fonts",
     "unplugin-icons/nuxt",
   ],
+
   plugins: ["~/plugins/plugins"],
 
   googleFonts: {
@@ -40,7 +41,7 @@ export default defineNuxtConfig({
       endpoints: {
         signOut: {
           path: "/auth/logout",
-          method: "post",
+          method: "get",
         },
         signIn: {
           path: "/auth/token",
@@ -58,22 +59,15 @@ export default defineNuxtConfig({
       sessionDataType: {
         created_at: "string",
         email: "string",
-        hashed_password: "string",
         id: "number",
-        is_active: "boolean",
-        is_banned: "boolean",
-        is_deleted: "boolean",
         name: "string",
         role: "string",
         updated_at: "string",
+        api_keys: "SessionApiKey[]",
       },
       token: {
         maxAgeInSeconds: 60 * 60 * 24,
       },
-      // @ts-ignore
-      // refreshToken: {
-      //   maxAgeInSeconds: 60 * 60 * 24,
-      // },
     },
     globalAppMiddleware: {
       isEnabled: true,
@@ -115,4 +109,5 @@ export default defineNuxtConfig({
 
   devServerHandlers: [],
   hooks: {},
+  compatibilityDate: "2024-07-14",
 });

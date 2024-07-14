@@ -5,7 +5,9 @@ import profileIcon from "~icons/material-symbols-light/person-outline-rounded";
 const { signOut } = useAuth();
 
 const logout = () => {
-  signOut();
+  signOut({
+    callbackUrl: "/auth/login",
+  });
 };
 </script>
 <template>
