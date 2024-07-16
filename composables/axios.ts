@@ -1,14 +1,11 @@
 import axios from "axios";
-const token = await useCookie("auth:token");
 
 const nuxtApp = useNuxtApp();
 
-export const useApi = () => {
+export const useApi = async () => {
   const baseURL = nuxtApp.$config.public.auth.baseURL;
 
-  if (!token.value) {
-    window.location.reload();
-  }
+  const token = await useCookie("auth:token");
 
   const instance = axios.create({
     baseURL,
