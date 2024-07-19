@@ -1,20 +1,18 @@
 <script lang="ts" setup>
+import type { ProjectFile } from "~/types/projects/projects";
+import type { ChooseProjectDto } from "~/types/components/ChooseProjectDto";
+
 const open = ref(["Users"]);
-const admins = ref([
-  ["Management", "mdi-account-multiple-outline"],
-  ["Settings", "mdi-cog-outline"],
-]);
-const cruds = ref([
-  ["Create", "mdi-plus-outline"],
-  ["Read", "mdi-file-outline"],
-  ["Update", "mdi-update"],
-  ["Delete", "mdi-delete"],
-]);
 
-import toolIcon from "~icons/material-symbols-light/arrow-selector-tool-outline-rounded";
 import uploadIcon from "~icons/solar/cloud-upload-broken";
+import toolIcon from "~icons/material-symbols-light/arrow-selector-tool-outline-rounded";
 
-const chooseProjectDialog = ref(false);
+const selectedFile = ref<ProjectFile | null>(null);
+
+const selectFile = (file: ChooseProjectDto) => {
+  selectedFile.value = file;
+  console.log(selectedFile.value);
+};
 </script>
 <template>
   <v-row class="flex-column ma-0 h-100 w-100">
@@ -101,28 +99,11 @@ const chooseProjectDialog = ref(false);
                     Ensure that the file is in the appropriate format (e.g.,
                     JPEG, TIFF) and does not exceed the maximum size limit.
                   </p>
-                  <v-dialog v-model="chooseProjectDialog" max-width="450">
-                    <template #activator="{ props: activatorProps }">
-                      <v-btn v-bind="activatorProps">
-                        Upload File or Choose one</v-btn
-                      >
+                  <SharedChooseProject @choose="selectFile">
+                    <template #default="{ props }">
+                      <v-btn v-bind="props"> Upload File or Choose one </v-btn>
                     </template>
-                    <v-card rounded="xl" border="primary sm opacity-75">
-                      <v-card-title class="px-6 pt-5">
-                        Choose project
-                      </v-card-title>
-                      <v-card-text> </v-card-text>
-
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-
-                        <v-btn
-                          text="Choose"
-                          @click="chooseProjectDialog = false"
-                        ></v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </v-dialog>
+                  </SharedChooseProject>
                 </v-card-text>
               </v-card>
             </v-card-item>

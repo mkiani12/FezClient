@@ -150,7 +150,7 @@ onMounted(() => {
                   <v-card-title class="text-h3 mt-1 text-primary">
                     {{ project.name }}
                     <span class="text-white text-h6 font-weight-regular">
-                      Sensitive data
+                      {{ project.subtitle }}
                     </span>
                   </v-card-title>
                   <v-card-text class="px-4">
@@ -166,7 +166,9 @@ onMounted(() => {
                       <div class="pl-2 text-body-2">
                         <p>
                           Last action:
-                          <span class="text-primary"> Image enhancement </span>
+                          <span class="text-primary">
+                            {{ project.last_action ?? "No action yet" }}
+                          </span>
                         </p>
                         <p class="desc-text mt-2">
                           Description:
@@ -215,13 +217,17 @@ onMounted(() => {
                         <p class="mt-2">
                           <span>
                             <v-chip density="compact" color="primary">
-                              Remote sensing
+                              {{ project.tag }}
                             </v-chip>
                           </span>
                         </p>
                         <p class="mt-2">
                           Modified
-                          <span class="text-primary"> 5 days ago </span>
+                          <span class="text-primary">
+                            {{
+                              moment(project.updated_at).format("DD MMMM YYYY")
+                            }}
+                          </span>
                         </p>
                       </div>
                     </div>

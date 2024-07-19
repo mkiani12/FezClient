@@ -10,6 +10,11 @@ export default defineNuxtConfig({
       title: "FEZtool - Free and Easy",
       titleTemplate: "%s - FEZtool",
     },
+    pageTransition: { name: "page", mode: "out-in" },
+    layoutTransition: {
+      name: "slide",
+      mode: "out-in", // default
+    },
   },
 
   modules: [
