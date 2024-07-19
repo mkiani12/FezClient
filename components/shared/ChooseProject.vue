@@ -10,6 +10,7 @@ const emit = defineEmits<{
 
 const axios = useApi();
 const notify = useSnackbarStore();
+const { mediaRules } = useValidation();
 
 const chooseProjectDialog = ref(false);
 
@@ -92,6 +93,11 @@ const getProjectList = () => {
     });
 };
 
+const clearDialog = () => {
+  view.value = "projects";
+  file.value = null;
+};
+
 onMounted(() => {
   getProjectList();
 });
@@ -100,7 +106,7 @@ onMounted(() => {
   <v-dialog
     v-model="chooseProjectDialog"
     max-width="600"
-    @update:modelValue="view = 'projects'"
+    @update:modelValue="clearDialog"
   >
     <template #activator="{ props: activatorProps }">
       <slot :props="activatorProps"></slot>
@@ -150,7 +156,12 @@ onMounted(() => {
         <v-card-text class="overflow-y-auto" style="height: 500px">
           <v-row>
             <v-col>
-              <v-file-input v-model="file" label="File">
+              <v-file-input
+                v-model="file"
+                label="File"
+                accept="image/tiff"
+                :rules="[mediaRules.justTif]"
+              >
                 <template #append>
                   <v-btn icon @click="uploadFile" :disabled="!file">
                     <v-progress-circular

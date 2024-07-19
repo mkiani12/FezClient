@@ -34,5 +34,6 @@ export default {
     pass_easy: "The password is too easy to guess.",
     required: "This field is required.",
     invalid_email: "The email address is not valid.",
+    just_tif: "File type must be .tif",
   },
 };

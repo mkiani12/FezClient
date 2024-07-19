@@ -74,6 +74,12 @@ export const useValidation = () => {
     required: (value: File[]): boolean | string => {
       return value.length > 0 || $t("form_validation.max2m");
     },
+    justTif: (value: File[]): boolean | string => {
+      const file = value[0];
+      return (
+        (file && file.type == "image/tiff") || $t("form_validation.just_tif")
+      );
+    },
   };
   return { validationRules, mediaRules };
 };

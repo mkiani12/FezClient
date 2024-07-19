@@ -2,15 +2,15 @@
 import type { ProjectFile } from "~/types/projects/projects";
 import type { ChooseProjectDto } from "~/types/components/ChooseProjectDto";
 
-const open = ref(["Users"]);
-
 import uploadIcon from "~icons/solar/cloud-upload-broken";
 import toolIcon from "~icons/material-symbols-light/arrow-selector-tool-outline-rounded";
 
 const selectedFile = ref<ProjectFile | null>(null);
+const disabledTools = ref(true);
 
 const selectFile = (file: ChooseProjectDto) => {
   selectedFile.value = file;
+  disabledTools.value = false;
   console.log(selectedFile.value);
 };
 </script>
@@ -27,7 +27,7 @@ const selectFile = (file: ChooseProjectDto) => {
             icon
             size="70"
             stacked
-            disabled
+            :disabled="disabledTools"
           >
             <v-icon size="40" :icon="toolIcon"> </v-icon>
             <span>Tool {{ n }}</span>
@@ -39,14 +39,11 @@ const selectFile = (file: ChooseProjectDto) => {
       <v-row class="h-100 mt-0">
         <v-col class="pb-0" cols="2">
           <ToolsVGlassCard transparent class="h-100">
-            <v-list
-              v-model:opened="open"
-              class="bg-transparent text-primary rounded-xl"
-            >
+            <v-list class="bg-transparent text-primary rounded-xl">
               <v-list-item
                 class="text-primary"
                 title="Home"
-                disabled
+                :disabled="disabledTools"
               ></v-list-item>
 
               <v-list-group value="Users">
@@ -55,19 +52,19 @@ const selectFile = (file: ChooseProjectDto) => {
                     class="text-primary"
                     v-bind="props"
                     title="Users"
-                    disabled
+                    :disabled="disabledTools"
                   ></v-list-item>
                 </template>
 
                 <v-list-item
                   class="text-primary pl-0"
                   title="Admin"
-                  disabled
+                  :disabled="disabledTools"
                 ></v-list-item>
                 <v-list-item
                   class="text-primary"
                   title="Actions"
-                  disabled
+                  :disabled="disabledTools"
                 ></v-list-item>
               </v-list-group>
             </v-list>
