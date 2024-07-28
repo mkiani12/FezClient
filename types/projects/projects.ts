@@ -1,6 +1,9 @@
 interface ProjectFile {
+  id: number;
   filename: string;
-  prefix: string;
+  extension: string;
+  path: string;
+  unique_name: string;
 }
 
 interface Project {
@@ -13,6 +16,7 @@ interface Project {
   subtitle: null | string;
   tag: string;
   updated_at: string;
+  first_file?: ProjectFile;
 }
 
 export type { Project, ProjectFile };

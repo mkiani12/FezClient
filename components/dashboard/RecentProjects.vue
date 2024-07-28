@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Project } from "~/types/projects/projects";
 
+import placeholderImage from "~/assets/placeholders/placeholder.jpg";
+
 const axios = useApi();
 const { validationRules: rules } = useValidation();
 const notify = useSnackbarStore();
@@ -56,6 +58,13 @@ const getProjectList = () => {
     .then(({ data }) => {
       loading.value = false;
       projectList.value = data;
+      console.log([...data]);
+
+      data.forEach((element: Project) => {
+        if (element.files.length > 0) {
+          element.first_file = element.files.shift();
+        }
+      });
     })
     .catch((e) => {
       loading.value = false;
@@ -157,7 +166,11 @@ onMounted(() => {
                     <div class="d-flex mb-2">
                       <div>
                         <v-img
-                          src="https://picsum.photos/200"
+                          :src="
+                            project.first_file
+                              ? project.first_file.path
+                              : placeholderImage
+                          "
                           class="rounded-lg border-primary border"
                           width="80"
                           height="80"
@@ -181,24 +194,8 @@ onMounted(() => {
                     <div class="d-flex">
                       <div class="images-box">
                         <v-img
-                          src="https://picsum.photos/200"
-                          class="rounded-lg border-primary border"
-                          width="35"
-                          height="35"
-                        ></v-img>
-                        <v-img
-                          src="https://picsum.photos/200"
-                          class="rounded-lg border-primary border"
-                          width="35"
-                          height="35"
-                        ></v-img>
-                        <v-img
-                          src="https://picsum.photos/200"
-                          class="rounded-lg border-primary border"
-                          width="35"
-                          height="35"
-                        ></v-img>
-                        <v-img
+                          v-for="file in project.files"
+                          :key="file.id"
                           src="https://picsum.photos/200"
                           class="rounded-lg border-primary border"
                           width="35"
@@ -283,5 +280,40 @@ onMounted(() => {
 <style lang="scss">
 .skeleton-fullscreen .v-skeleton-loader__image {
   height: 100% !important;
+}
+
+.desc-text {
+  display: -moz-box;
+  display: -webkit-box;
+  max-width: 200px;
+  -moz-line-clamp: 3;
+  -moz-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.images-box {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+  min-width: 78px;
+}
+
+.projects-slide {
+  .v-slide-group__prev--disabled,
+  .v-slide-group__next--disabled {
+    overflow: hidden;
+    max-width: 0;
+    min-width: 0;
+  }
+
+  .v-slide-group__prev,
+  .v-slide-group__next {
+    color: rgb(255, 255, 255);
+    transition: all 0.2s ease-in-out;
+  }
 }
 </style>

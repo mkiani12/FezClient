@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import uploadBtnIcon from "~icons/material-symbols-light/upload-rounded";
+import placeholderImage from "~/assets/placeholders/placeholder.jpg";
 import type { Project, ProjectFile } from "~/types/projects/projects";
 import type { ChooseProjectDto } from "~/types/components/ChooseProjectDto";
 import moment from "jalali-moment";
@@ -41,7 +42,7 @@ const uploadFile = () => {
 
     axios
       .postForm(
-        `/file/upload?project_name=${selectedProject.value?.name}`,
+        `/file/upload?project_id=${selectedProject.value?.id}`,
         uploadData,
         {
           onUploadProgress: (progressEvent) => {
@@ -57,9 +58,18 @@ const uploadFile = () => {
         uploading.value = false;
         file.value = null;
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((e) => {
+        console.log(e);
         uploading.value = false;
+        if (e.response) {
+          const { detail } = e.response.data;
+          if (detail) {
+            console.log(detail);
+            notify.showMessage(detail, "error");
+          }
+        } else {
+          console.log(e);
+        }
       });
   }
 };
@@ -133,7 +143,11 @@ onMounted(() => {
               >
                 <v-img
                   height="200px"
-                  src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
+                  :src="
+                    project.files.length > 0
+                      ? project.files[0].path
+                      : placeholderImage
+                  "
                   cover
                 ></v-img>
 
@@ -178,6 +192,12 @@ onMounted(() => {
           </v-row>
           <v-row>
             <v-col
+              v-if="!selectedProject?.files || selectedProject.files.length < 1"
+              class="text-center"
+            >
+              No file uploaded yet!
+            </v-col>
+            <v-col
               v-for="(files, index) in selectedProject?.files"
               :key="index"
               cols="12"
@@ -188,11 +208,7 @@ onMounted(() => {
                 class="mx-auto pb-4 rounded-xl overflow-hidden"
                 @click="selectFile(files)"
               >
-                <v-img
-                  height="200px"
-                  src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
-                  cover
-                ></v-img>
+                <v-img height="200px" :src="files.path" cover></v-img>
 
                 <v-card-title>
                   {{ selectedProject?.name }}

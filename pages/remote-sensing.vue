@@ -11,6 +11,7 @@ const disabledTools = ref(true);
 const selectFile = (file: ChooseProjectDto) => {
   selectedFile.value = file;
   disabledTools.value = false;
+
   console.log(selectedFile.value);
 };
 </script>
@@ -70,10 +71,10 @@ const selectFile = (file: ChooseProjectDto) => {
             </v-list>
           </ToolsVGlassCard>
         </v-col>
-        <v-col class="pb-0" cols="10">
+        <v-col class="pb-0 h-100" cols="10">
           <ToolsVGlassCard transparent class="h-100">
             <v-card-item
-              v-if="true"
+              v-if="!selectedFile"
               class="h-100 d-flex align-center justify-center"
             >
               <v-card
@@ -105,7 +106,11 @@ const selectFile = (file: ChooseProjectDto) => {
               </v-card>
             </v-card-item>
             <v-card-item v-else class="h-100">
-              <v-card-title>Content</v-card-title>
+              <v-img
+                class="rounded-xl"
+                src="/images/background/main-bg.jpeg"
+                max-height="100%"
+              ></v-img>
             </v-card-item>
           </ToolsVGlassCard>
         </v-col>
