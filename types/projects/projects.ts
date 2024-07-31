@@ -2,7 +2,9 @@ interface ProjectFile {
   id: number;
   filename: string;
   extension: string;
-  path: string;
+  path: null | string;
+  file_path: null | string;
+  thumbnail_path: null | string;
   unique_name: string;
 }
 
