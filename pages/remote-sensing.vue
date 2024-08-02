@@ -16,8 +16,8 @@ const selectFile = (file: ChooseProjectDto) => {
 };
 </script>
 <template>
-  <v-row class="flex-column ma-0 h-100 w-100">
-    <div class="">
+  <div class="flex flex-column ma-0 h-100 w-100">
+    <div class="tool-topbor">
       <ToolsVGlassCard :card-props="{ height: 100 }" transparent>
         <v-card-item class="d-flex h-100 align-center py-1">
           <v-btn
@@ -36,9 +36,9 @@ const selectFile = (file: ChooseProjectDto) => {
         </v-card-item>
       </ToolsVGlassCard>
     </div>
-    <v-col class="pa-0">
-      <v-row class="h-100 mt-0">
-        <v-col class="pb-0" cols="2">
+    <div class="tool-content">
+      <div class="d-flex pt-3 h-100">
+        <v-col class="pa-0" cols="2">
           <ToolsVGlassCard transparent class="h-100">
             <v-list class="bg-transparent text-primary rounded-xl">
               <v-list-item
@@ -71,7 +71,7 @@ const selectFile = (file: ChooseProjectDto) => {
             </v-list>
           </ToolsVGlassCard>
         </v-col>
-        <v-col class="pb-0 h-100" cols="10">
+        <v-col class="pa-0 pl-3 max-h-100" cols="10">
           <ToolsVGlassCard transparent class="h-100">
             <v-card-item
               v-if="!selectedFile"
@@ -105,16 +105,26 @@ const selectFile = (file: ChooseProjectDto) => {
                 </v-card-text>
               </v-card>
             </v-card-item>
-            <v-card-item v-else class="h-100">
+            <v-card-text v-else class="h-100">
               <v-img
                 class="rounded-xl"
                 src="/images/background/main-bg.jpeg"
                 max-height="100%"
               ></v-img>
-            </v-card-item>
+            </v-card-text>
           </ToolsVGlassCard>
         </v-col>
-      </v-row>
-    </v-col>
-  </v-row>
+      </div>
+    </div>
+  </div>
 </template>
+
+<style lang="scss">
+.tool-topbar {
+  height: 100px !important;
+}
+
+.tool-content {
+  height: calc(100% - 100px) !important;
+}
+</style>
