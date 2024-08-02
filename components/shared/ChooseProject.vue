@@ -144,8 +144,8 @@ onMounted(() => {
                 <v-img
                   height="200px"
                   :src="
-                    project.files.length > 0
-                      ? project.files[0].path
+                    project.files.length > 0 && project.files[0].thumbnail_path
+                      ? project.files[0].thumbnail_path
                       : placeholderImage
                   "
                   cover
@@ -208,7 +208,11 @@ onMounted(() => {
                 class="mx-auto pb-4 rounded-xl overflow-hidden"
                 @click="selectFile(files)"
               >
-                <v-img height="200px" :src="files.path" cover></v-img>
+                <v-img
+                  height="200px"
+                  :src="files.thumbnail_path ?? ''"
+                  cover
+                ></v-img>
 
                 <v-card-title>
                   {{ selectedProject?.name }}

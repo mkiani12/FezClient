@@ -167,8 +167,9 @@ onMounted(() => {
                       <div>
                         <v-img
                           :src="
-                            project.first_file
-                              ? project.first_file.path
+                            project?.first_file &&
+                            project.first_file.thumbnail_path
+                              ? project.first_file.thumbnail_path
                               : placeholderImage
                           "
                           class="rounded-lg border-primary border"
@@ -196,7 +197,7 @@ onMounted(() => {
                         <v-img
                           v-for="file in project.files"
                           :key="file.id"
-                          src="https://picsum.photos/200"
+                          :src="file.thumbnail_path ?? ''"
                           class="rounded-lg border-primary border"
                           width="35"
                           height="35"

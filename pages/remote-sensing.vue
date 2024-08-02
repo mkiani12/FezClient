@@ -108,7 +108,7 @@ const selectFile = (file: ChooseProjectDto) => {
             <v-card-text v-else class="h-100">
               <v-img
                 class="rounded-xl"
-                src="/images/background/main-bg.jpeg"
+                :src="selectedFile.thumbnail_path ?? ''"
                 max-height="100%"
               ></v-img>
             </v-card-text>
