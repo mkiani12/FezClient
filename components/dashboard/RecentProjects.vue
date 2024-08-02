@@ -195,7 +195,7 @@ onMounted(() => {
                     <div class="d-flex">
                       <div class="images-box">
                         <v-img
-                          v-for="file in project.files"
+                          v-for="file in project.files.slice(0, 4)"
                           :key="file.id"
                           :src="file.thumbnail_path ?? ''"
                           class="rounded-lg border-primary border"

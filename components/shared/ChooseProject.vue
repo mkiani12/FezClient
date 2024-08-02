@@ -215,7 +215,7 @@ onMounted(() => {
                 ></v-img>
 
                 <v-card-title>
-                  {{ selectedProject?.name }}
+                  {{ files.filename }}
                 </v-card-title>
 
                 <v-card-subtitle>
