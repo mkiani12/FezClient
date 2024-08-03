@@ -14,12 +14,25 @@ const selectFile = (file: ChooseProjectDto) => {
 
   console.log(selectedFile.value);
 };
+
+const scrolling = (e: WheelEvent) => {
+  const el = e.target as HTMLElement;
+  e.preventDefault();
+  el.scrollLeft += e.deltaY;
+};
 </script>
 <template>
   <div class="flex flex-column ma-0 h-100 w-100">
-    <div class="tool-topbor">
-      <ToolsVGlassCard :card-props="{ height: 100 }" transparent>
-        <v-card-item class="d-flex h-100 align-center py-1">
+    <div class="tool-topbor overflow-x-auto">
+      <ToolsVGlassCard
+        class="overflow-hidden"
+        :card-props="{ height: 100 }"
+        transparent
+      >
+        <v-card-text
+          class="d-flex no-wrap overflow-x-auto h-100 align-center py-1 scroll-behavior"
+          @wheel="scrolling"
+        >
           <v-btn
             v-for="n in 18"
             :key="n"
@@ -33,7 +46,7 @@ const selectFile = (file: ChooseProjectDto) => {
             <v-icon size="40" :icon="toolIcon"> </v-icon>
             <span>Tool {{ n }}</span>
           </v-btn>
-        </v-card-item>
+        </v-card-text>
       </ToolsVGlassCard>
     </div>
     <div class="tool-content">

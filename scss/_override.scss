@@ -36,6 +36,10 @@ html {
   max-width: 100% !important;
 }
 
+.scroll-behavior {
+  scroll-behavior: smooth !important;
+}
+
 /* Global scrollbar styles */
 *::-webkit-scrollbar {
   width: 4px;

@@ -154,7 +154,11 @@ onMounted(() => {
               >
                 <ToolsVGlassCard
                   class="ma-4 border-white"
-                  :card-props="{ width: 350, height: 250 }"
+                  :card-props="{
+                    width: 350,
+                    height: 250,
+                    to: `/project/${project.id}`,
+                  }"
                 >
                   <v-card-title class="text-h3 mt-1 text-primary">
                     {{ project.name }}

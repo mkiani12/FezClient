@@ -31,5 +31,4 @@ console.log(data.value);
   position: absolute;
   width: 100%;
 }
-
 </style>
