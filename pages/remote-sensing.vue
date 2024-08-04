@@ -107,8 +107,8 @@ const scrolling = (e: WheelEvent) => {
                   ></v-icon>
                   <p class="text-primary my-6">
                     Please upload the picture for remote sensing analysis.
-                    Ensure that the file is in the appropriate format (e.g.,
-                    JPEG, TIFF) and does not exceed the maximum size limit.
+                    Ensure that the file is in the appropriate format (TIFF) and
+                    does not exceed the maximum size limit.
                   </p>
                   <SharedChooseProject @choose="selectFile">
                     <template #default="{ props }">
@@ -131,13 +131,3 @@ const scrolling = (e: WheelEvent) => {
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.tool-topbar {
-  height: 100px !important;
-}
-
-.tool-content {
-  height: calc(100% - 100px) !important;
-}
-</style>

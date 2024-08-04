@@ -57,10 +57,12 @@ const uploadFile = () => {
         selectedProject.value?.files.push(newFile);
         uploading.value = false;
         file.value = null;
+        uploadProgress.value = 0;
       })
       .catch((e) => {
         console.log(e);
         uploading.value = false;
+        uploadProgress.value = 0;
         if (e.response) {
           const { detail } = e.response.data;
           if (detail) {

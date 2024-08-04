@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import uploadIcon from "~icons/solar/cloud-upload-broken";
+import FixIcon from "~icons/material-symbols-light/settings-alert-outline-rounded";
 </script>
 <template>
   <ToolsVGlassCard transparent class="h-100">
-    <v-card-item v-if="true" class="h-100 d-flex align-center justify-center">
+    <v-card-item class="h-100 d-flex align-center justify-center">
       <v-card
         border="dashed md primary opacity-75"
         class="rounded-xl text-center"
@@ -14,18 +14,15 @@ import uploadIcon from "~icons/solar/cloud-upload-broken";
         <v-card-text
           class="d-flex flex-column justify-center align-center h-100"
         >
-          <v-icon color="primary" size="100" :icon="uploadIcon"></v-icon>
+          <v-icon color="primary" size="100" :icon="FixIcon"></v-icon>
           <p class="text-primary my-6">
-            Please upload the picture for remote sensing analysis. Ensure that
-            the file is in the appropriate format (e.g., JPEG, TIFF) and does
-            not exceed the maximum size limit.
+            Exciting changes are coming to this page! We're working hard to
+            enhance your remote sensing experience. Please come back soon to
+            explore the new features.
           </p>
-          <v-btn> Upload File or Choose one</v-btn>
+          <v-btn to="/"> Go back Home</v-btn>
         </v-card-text>
       </v-card>
-    </v-card-item>
-    <v-card-item v-else class="h-100">
-      <v-card-title>Content</v-card-title>
     </v-card-item>
   </ToolsVGlassCard>
 </template>
