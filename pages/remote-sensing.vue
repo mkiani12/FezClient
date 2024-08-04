@@ -3,7 +3,28 @@ import type { ProjectFile } from "~/types/projects/projects";
 import type { ChooseProjectDto } from "~/types/components/ChooseProjectDto";
 
 import uploadIcon from "~icons/solar/cloud-upload-broken";
-import toolIcon from "~icons/material-symbols-light/arrow-selector-tool-outline-rounded";
+
+import ImageEnhancementIcon from "~icons/carbon/edge-enhancement";
+import FiltersIcon from "~icons/solar/filters-bold-duotone";
+import MosaicIcon from "~icons/gis/mosaic";
+
+const actions = ref([
+  {
+    title: "Image Enhancement",
+    type: "-",
+    icon: ImageEnhancementIcon,
+  },
+  {
+    title: "Filters",
+    type: "-",
+    icon: FiltersIcon,
+  },
+  {
+    title: "Mosaic",
+    type: "-",
+    icon: MosaicIcon,
+  },
+]);
 
 const selectedFile = ref<ProjectFile | null>(null);
 const disabledTools = ref(true);
@@ -34,17 +55,17 @@ const scrolling = (e: WheelEvent) => {
           @wheel="scrolling"
         >
           <v-btn
-            v-for="n in 18"
-            :key="n"
-            class="mx-1"
+            v-for="action in actions"
+            :key="action.title"
+            class="mx-3"
             variant="text"
             icon
             size="70"
             stacked
             :disabled="disabledTools"
           >
-            <v-icon size="40" :icon="toolIcon"> </v-icon>
-            <span>Tool {{ n }}</span>
+            <v-icon size="40" :icon="action.icon"> </v-icon>
+            <span class="text-body-2">{{ action.title }}</span>
           </v-btn>
         </v-card-text>
       </ToolsVGlassCard>
