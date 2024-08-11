@@ -1,4 +1,7 @@
 export default {
+  VImg: {
+    lazySrc: "https://picsum.photos/id/50/200/200",
+  },
   VCard: {
     elevation: "10",
   },

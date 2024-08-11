@@ -1,0 +1,195 @@
+<script setup lang="ts">
+import uploadBtnIcon from "~icons/material-symbols-light/upload-rounded";
+import type { Project, ProjectFile } from "~/types/projects/projects";
+import type { ChooseFileDto } from "~/types/dto/components/ChooseFileDto";
+import moment from "jalali-moment";
+
+const emit = defineEmits<{
+  (e: "choose", file: ChooseFileDto): void;
+}>();
+
+const props = defineProps<{
+  projectId: string | number;
+}>();
+
+const axios = useApi();
+const notify = useSnackbarStore();
+const { mediaRules } = useValidation();
+
+const chooseFileDialog = ref(false);
+
+const loading = ref(false);
+const projectList = ref<Project[]>([]);
+
+const selectedProject = ref<Project | null>(null);
+const file = ref<File | null>(null);
+
+const uploading = ref(false);
+const uploadProgress = ref(0);
+
+const selectFile = (file: ProjectFile) => {
+  emit("choose", file);
+  chooseFileDialog.value = false;
+};
+
+const uploadFile = () => {
+  if (!uploading.value) {
+    uploading.value = true;
+
+    const uploadData = {
+      file: file.value,
+      filename: file.value?.name,
+    };
+
+    axios
+      .postForm(
+        `/file/upload?project_id=${selectedProject.value?.id}`,
+        uploadData,
+        {
+          onUploadProgress: (progressEvent) => {
+            uploadProgress.value = Math.floor(
+              (progressEvent.progress ?? 0) * 100
+            );
+          },
+        }
+      )
+      .then(({ data: newFile }) => {
+        console.log(newFile);
+        selectedProject.value?.files.push(newFile);
+        uploading.value = false;
+        file.value = null;
+        uploadProgress.value = 0;
+      })
+      .catch((e) => {
+        console.log(e);
+        uploading.value = false;
+        uploadProgress.value = 0;
+        if (e.response) {
+          const { detail } = e.response.data;
+          if (detail) {
+            console.log(detail);
+            notify.showMessage(detail, "error");
+          }
+        } else {
+          console.log(e);
+        }
+      });
+  }
+};
+
+const getProjectList = () => {
+  loading.value = true;
+  axios
+    .get("/project/list/?skip=0&limit=10")
+    .then(({ data }) => {
+      console.log(data);
+
+      selectedProject.value = data.find(
+        (project: Project) => project.id == props.projectId
+      );
+      loading.value = false;
+      projectList.value = data;
+    })
+    .catch((e) => {
+      loading.value = false;
+      if (e.response) {
+        const { detail } = e.response.data;
+        if (detail) {
+          console.log(detail);
+          notify.showMessage(detail, "error");
+        }
+      } else {
+        console.log(e);
+      }
+    });
+};
+
+const clearDialog = () => {
+  file.value = null;
+};
+
+onMounted(() => {
+  getProjectList();
+});
+</script>
+<template>
+  <v-dialog
+    v-model="chooseFileDialog"
+    max-width="600"
+    @update:modelValue="clearDialog"
+  >
+    <template #activator="{ props: activatorProps }">
+      <slot :props="activatorProps"></slot>
+    </template>
+    <v-scroll-y-transition leave-absolute>
+      <v-card rounded="xl" border="primary sm opacity-75">
+        <v-card-title class="px-6 pt-5">
+          Choose file or upload one
+        </v-card-title>
+        <v-card-text class="overflow-y-auto" style="height: 500px">
+          <v-row>
+            <v-col>
+              <v-file-input
+                v-model="file"
+                label="File"
+                accept="image/tiff"
+                :rules="[mediaRules.justTif]"
+              >
+                <template #append>
+                  <v-btn icon @click="uploadFile" :disabled="!file">
+                    <v-progress-circular
+                      v-if="uploading"
+                      color="white"
+                      size="30"
+                      :model-value="uploadProgress"
+                    ></v-progress-circular>
+                    <v-icon v-else :icon="uploadBtnIcon"></v-icon>
+                  </v-btn>
+                </template>
+              </v-file-input>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col
+              v-if="!selectedProject?.files || selectedProject.files.length < 1"
+              class="text-center"
+            >
+              No file uploaded yet!
+            </v-col>
+            <v-col
+              v-for="(files, index) in selectedProject?.files"
+              :key="index"
+              cols="12"
+              md="6"
+            >
+              <v-card
+                border="primary sm opacity-75"
+                class="mx-auto pb-4 rounded-xl overflow-hidden"
+                @click="selectFile(files)"
+              >
+                <v-img
+                  height="200px"
+                  :src="files.thumbnail_path ?? ''"
+                  cover
+                ></v-img>
+
+                <v-card-title>
+                  {{ files.filename }}
+                </v-card-title>
+
+                <v-card-subtitle>
+                  {{
+                    moment(selectedProject?.created_at).format("DD MMMM YYYY")
+                  }}
+                </v-card-subtitle>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-scroll-y-transition>
+  </v-dialog>
+</template>
+
+<style scoped></style>
+~/types/dto/ChooseFileDto

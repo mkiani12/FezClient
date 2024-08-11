@@ -1,14 +1,15 @@
 <script lang="ts" setup>
-import type { ProjectFile } from "~/types/projects/projects";
-import type { ChooseProjectDto } from "~/types/components/ChooseProjectDto";
+import type { Project } from "~/types/projects/projects";
+import type { SelectedFiles, Band, Action } from "~/types/tools/tools";
+import type { ChooseFileDto } from "~/types/dto/components/ChooseFileDto";
 
-import uploadIcon from "~icons/solar/cloud-upload-broken";
+import CloseIcon from "~icons/material-symbols-light/cancel-outline-rounded";
 
 import ImageEnhancementIcon from "~icons/carbon/edge-enhancement";
 import FiltersIcon from "~icons/solar/filters-bold-duotone";
 import MosaicIcon from "~icons/gis/mosaic";
 
-const actions = ref([
+const actions = ref<Action[]>([
   {
     title: "Image Enhancement",
     type: "-",
@@ -26,14 +27,54 @@ const actions = ref([
   },
 ]);
 
-const selectedFile = ref<ProjectFile | null>(null);
+const selectedProject = ref<null | Project>(null);
+
+const selectedFiles = ref<SelectedFiles>({
+  RED: null,
+  GREEN: null,
+  BLUE: null,
+  NIR: null,
+  SWIR1: null,
+  SWIR2: null,
+});
+
+const bands: Band[] = ["RED", "GREEN", "BLUE", "NIR", "SWIR1", "SWIR2"];
+
 const disabledTools = ref(true);
 
-const selectFile = (file: ChooseProjectDto) => {
-  selectedFile.value = file;
+const exports = ref([]);
+
+const showExport = (exported: any) => {
+  console.log(exported);
+};
+
+const selectFile = (file: ChooseFileDto, band: Band) => {
+  selectedFiles.value[band] = file;
   disabledTools.value = false;
 
-  console.log(selectedFile.value);
+  console.log(selectedFiles.value);
+};
+
+const clearFile = (band: Band) => {
+  selectedFiles.value[band] = null;
+};
+
+const clearProject = () => {
+  selectedProject.value = null;
+  selectedFiles.value = {
+    RED: null,
+    GREEN: null,
+    BLUE: null,
+    NIR: null,
+    SWIR1: null,
+    SWIR2: null,
+  };
+  disabledTools.value = true;
+};
+
+const selectProject = (project: Project) => {
+  console.log(project);
+  selectedProject.value = project;
 };
 
 const scrolling = (e: WheelEvent) => {
@@ -73,44 +114,126 @@ const scrolling = (e: WheelEvent) => {
     <div class="tool-content">
       <div class="d-flex pt-3 h-100">
         <v-col class="pa-0" cols="2">
-          <ToolsVGlassCard transparent class="h-100">
-            <v-list class="bg-transparent text-primary rounded-xl">
-              <v-list-item
-                class="text-primary"
-                title="Home"
-                :disabled="disabledTools"
-              ></v-list-item>
-
-              <v-list-group value="Users">
-                <template v-slot:activator="{ props }">
-                  <v-list-item
-                    class="text-primary"
-                    v-bind="props"
-                    title="Users"
-                    :disabled="disabledTools"
-                  ></v-list-item>
-                </template>
-
+          <ToolsVGlassCard transparent class="h-100 d-flex flex-column">
+            <v-card-text class="pa-0">
+              <v-list class="bg-transparent text-primary rounded-xl">
+                <p class="text-primary py-3 pl-4">Exports</p>
+                <v-divider></v-divider>
                 <v-list-item
-                  class="text-primary pl-0"
-                  title="Admin"
-                  :disabled="disabledTools"
-                ></v-list-item>
-                <v-list-item
+                  v-for="(exported, index) in exports"
+                  :key="index"
                   class="text-primary"
-                  title="Actions"
+                  :title="exported"
                   :disabled="disabledTools"
+                  @click="showExport(exported)"
                 ></v-list-item>
-              </v-list-group>
-            </v-list>
+                <p
+                  v-if="exports.length < 1"
+                  class="text-primary text-center text-body-1 py-3"
+                >
+                  There is no export yet!
+                  <br />
+                  try to export something
+                </p>
+              </v-list>
+            </v-card-text>
+
+            <v-card-actions v-if="selectedProject">
+              <v-btn block color="primary" @click="clearProject">
+                Close Project
+              </v-btn>
+            </v-card-actions>
           </ToolsVGlassCard>
         </v-col>
         <v-col class="pa-0 pl-3 max-h-100" cols="10">
-          <ToolsVGlassCard transparent class="h-100">
-            <v-card-item
-              v-if="!selectedFile"
-              class="h-100 d-flex align-center justify-center"
-            >
+          <ToolsVGlassCard v-if="selectedProject" transparent class="h-100">
+            <v-card-item class="h-100 d-flex align-center justify-center">
+              <v-row>
+                <v-col v-for="band in bands" :key="band" cols="4">
+                  <v-card
+                    v-if="!selectedFiles[band]"
+                    border="dashed md primary opacity-75"
+                    class="rounded-xl text-center"
+                    color="transparent"
+                    max-width="500"
+                    max-height="400"
+                  >
+                    <v-card-text
+                      class="d-flex flex-column justify-center align-center h-100"
+                    >
+                      <h2 class="text-h4 text-primary">{{ band }}</h2>
+                      <p class="text-primary mb-6 mt-2">
+                        Upload different image bands for processing. Band
+                        validation is currently unavailable. Please upload
+                        correct bands.
+                      </p>
+                      <SharedChooseFile
+                        :project-id="selectedProject.id"
+                        @choose="(e) => selectFile(e, band)"
+                      >
+                        <template #default="{ props }">
+                          <v-btn v-bind="props">
+                            Upload File or Choose one
+                          </v-btn>
+                        </template>
+                      </SharedChooseFile>
+                    </v-card-text>
+                  </v-card>
+                  <v-hover v-else v-slot="{ isHovering, props }">
+                    <v-card
+                      border="dashed md primary opacity-75"
+                      class="rounded-xl text-center"
+                      color="transparent"
+                      height="100%"
+                      max-width="500"
+                      max-height="400"
+                      v-bind="props"
+                    >
+                      <v-card-text
+                        class="d-flex flex-column justify-center align-center h-100 pa-0"
+                      >
+                        <v-img
+                          :src="selectedFiles[band].thumbnail_path"
+                          height="100%"
+                          max-height="100%"
+                          width="auto"
+                        >
+                          <v-expand-transition>
+                            <div
+                              v-if="isHovering"
+                              class="d-flex flex-column align-center justify-center transition-fast-in-fast-out opacity-25 v-card--reveal text-h2"
+                              style="
+                                height: 100%;
+                                background-color: rgba(
+                                  var(--v-theme-primary),
+                                  0.4
+                                );
+                              "
+                            >
+                              <h3 class="text-h3 text-center text-white">
+                                {{ band }}
+                              </h3>
+                              <v-btn
+                                color="white"
+                                icon
+                                variant="text"
+                                size="60"
+                                @click="clearFile(band)"
+                              >
+                                <v-icon size="60" :icon="CloseIcon"></v-icon>
+                              </v-btn>
+                            </div>
+                          </v-expand-transition>
+                        </v-img>
+                      </v-card-text>
+                    </v-card>
+                  </v-hover>
+                </v-col>
+              </v-row>
+            </v-card-item>
+          </ToolsVGlassCard>
+          <ToolsVGlassCard v-else transparent class="h-100">
+            <v-card-item class="h-100 d-flex align-center justify-center">
               <v-card
                 border="dashed md primary opacity-75"
                 class="rounded-xl text-center"
@@ -121,34 +244,23 @@ const scrolling = (e: WheelEvent) => {
                 <v-card-text
                   class="d-flex flex-column justify-center align-center h-100"
                 >
-                  <v-icon
-                    color="primary"
-                    size="100"
-                    :icon="uploadIcon"
-                  ></v-icon>
-                  <p class="text-primary my-6">
-                    Please upload the picture for remote sensing analysis.
-                    Ensure that the file is in the appropriate format (TIFF) and
-                    does not exceed the maximum size limit.
+                  <h2 class="text-h4 text-primary">Choose Project</h2>
+                  <p class="text-primary mb-6 mt-4">
+                    Want to continue on an existing project or start something
+                    fresh? The choice is yours.
                   </p>
-                  <SharedChooseProject @choose="selectFile">
+                  <SharedChooseProject @choose="selectProject">
                     <template #default="{ props }">
-                      <v-btn v-bind="props"> Upload File or Choose one </v-btn>
+                      <v-btn v-bind="props"> Choose one </v-btn>
                     </template>
                   </SharedChooseProject>
                 </v-card-text>
               </v-card>
             </v-card-item>
-            <v-card-text v-else class="h-100">
-              <v-img
-                class="rounded-xl"
-                :src="selectedFile.image_path ?? ''"
-                max-height="100%"
-              ></v-img>
-            </v-card-text>
           </ToolsVGlassCard>
         </v-col>
       </div>
     </div>
   </div>
 </template>
+~/types/dto/ChooseFileDto

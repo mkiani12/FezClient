@@ -131,8 +131,7 @@ onMounted(() => {
                   </span>
                 </p>
                 <p class="mt-2">
-                  <span class="mb-2">Tags :</span>
-                  <br />
+                  <div class="mb-1">Tags :</div>
                   <span>
                     <v-chip density="compact" color="primary">
                       {{ project.tag }}
