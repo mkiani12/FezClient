@@ -1,7 +1,10 @@
 <script lang="ts" setup>
-import type { Project } from "~/types/projects/projects";
+import type { Project, ExportedFile } from "~/types/projects/projects";
 import type { SelectedFiles, Band, Action } from "~/types/tools/tools";
 import type { ChooseFileDto } from "~/types/dto/components/ChooseFileDto";
+
+const axios = useApi();
+const { validationRules: rules } = useValidation();
 
 import CloseIcon from "~icons/material-symbols-light/cancel-outline-rounded";
 
@@ -10,20 +13,81 @@ import FiltersIcon from "~icons/solar/filters-bold-duotone";
 import MosaicIcon from "~icons/gis/mosaic";
 
 const actions = ref<Action[]>([
+  // ready
+  // todo: fix icons and optional fields and fill required bands
+  {
+    title: "AFVI",
+    type: "afvi",
+    icon: ImageEnhancementIcon,
+    requiredBands: ["SWIR1", "NIR"],
+  },
+  {
+    title: "BI",
+    type: "bi",
+    icon: ImageEnhancementIcon,
+    requiredBands: ["NIR", "GREEN", "RED"],
+  },
+  {
+    title: "NDVI",
+    type: "ndvi",
+    icon: ImageEnhancementIcon,
+    requiredBands: ["RED", "NIR"],
+  },
+  {
+    title: "NDWI",
+    type: "ndwi",
+    icon: ImageEnhancementIcon,
+    requiredBands: ["NIR", "GREEN"],
+  },
+  {
+    title: "SAVI",
+    type: "savi",
+    icon: ImageEnhancementIcon,
+    requiredBands: ["RED", "NIR"],
+  },
+  {
+    title: "UI",
+    type: "ui",
+    icon: ImageEnhancementIcon,
+    requiredBands: ["SWIR2", "NIR"],
+  },
+  {
+    title: "NDVI",
+    type: "ndvi",
+    icon: ImageEnhancementIcon,
+    requiredBands: ["RED", "NIR"],
+  },
+  {
+    title: "SPECTRAL PROFILE",
+    type: "spectral_profile",
+    icon: ImageEnhancementIcon,
+    requiredBands: ["RED", "GREEN", "BLUE", "NIR", "SWIR1", "SWIR2"],
+  },
+  {
+    title: "PCA",
+    type: "pca",
+    icon: ImageEnhancementIcon,
+    requiredBands: ["RED", "GREEN", "BLUE", "NIR", "SWIR1", "SWIR2"],
+  },
+
+  // unready
   {
     title: "Image Enhancement",
     type: "-",
     icon: ImageEnhancementIcon,
+    requiredBands: [],
   },
   {
     title: "Filters",
     type: "-",
     icon: FiltersIcon,
+    requiredBands: [],
   },
   {
     title: "Mosaic",
     type: "-",
     icon: MosaicIcon,
+    requiredBands: [],
   },
 ]);
 
@@ -42,10 +106,18 @@ const bands: Band[] = ["RED", "GREEN", "BLUE", "NIR", "SWIR1", "SWIR2"];
 
 const disabledTools = ref(true);
 
-const exports = ref([]);
+const view = ref<"chooseProject" | "showExport">("chooseProject");
+const selectedExport = ref<ExportedFile | null>(null);
 
-const showExport = (exported: any) => {
+const showExport = (exported: ExportedFile) => {
+  selectedExport.value = exported;
+  view.value = "showExport";
   console.log(exported);
+};
+
+const clearShowExport = () => {
+  selectedExport.value = null;
+  view.value = "chooseProject";
 };
 
 const selectFile = (file: ChooseFileDto, band: Band) => {
@@ -77,6 +149,70 @@ const selectProject = (project: Project) => {
   selectedProject.value = project;
 };
 
+const selectedOperate = ref<Action | null>(null);
+const operationDialog = ref(false);
+const title = ref("");
+const operationLoading = ref(false);
+
+const operate = (action: Action) => {
+  selectedOperate.value = action;
+  operationDialog.value = true;
+  console.log(action);
+};
+
+const doOperate = () => {
+  const bands = {
+    red_band: selectedFiles.value.RED ? selectedFiles.value.RED.id : undefined,
+    green_band: selectedFiles.value.GREEN
+      ? selectedFiles.value.GREEN.id
+      : undefined,
+    blue_band: selectedFiles.value.BLUE
+      ? selectedFiles.value.BLUE.id
+      : undefined,
+    nir_band: selectedFiles.value.NIR ? selectedFiles.value.NIR.id : undefined,
+    swir1_band: selectedFiles.value.SWIR1
+      ? selectedFiles.value.SWIR1.id
+      : undefined,
+    swir2_band: selectedFiles.value.SWIR2
+      ? selectedFiles.value.SWIR2.id
+      : undefined,
+  };
+  operationLoading.value = true;
+  axios
+    .post(
+      `/operation/?operation_type=${selectedOperate.value?.type}&project_id=${selectedProject.value?.id}&title=${title.value}`,
+      {
+        bands,
+      }
+    )
+    .then(({ data: exported }) => {
+      console.log(exported);
+      selectedProject.value?.operation_output.push(exported);
+      showExport(exported);
+      operationDialog.value = false;
+      title.value = "";
+      operationLoading.value = false;
+    })
+    .catch((err) => {
+      console.log(err);
+      operationDialog.value = false;
+      title.value = "";
+      operationLoading.value = false;
+    });
+};
+
+// returns true if required band isn't filled
+const checkRequireBands = (bands: Band[]) => {
+  if (bands.length == 0) return false;
+
+  let haveRequireBands = true;
+  for (const band of bands) {
+    if (!selectedFiles.value[band]) haveRequireBands = false;
+  }
+
+  return !haveRequireBands;
+};
+
 const scrolling = (e: WheelEvent) => {
   const el = e.target as HTMLElement;
   e.preventDefault();
@@ -85,7 +221,42 @@ const scrolling = (e: WheelEvent) => {
 </script>
 <template>
   <div class="flex flex-column ma-0 h-100 w-100">
+    <!-- header -->
     <div class="tool-topbor overflow-x-auto">
+      <v-dialog v-model="operationDialog" max-width="400">
+        <v-card
+          v-if="selectedOperate"
+          rounded="xl"
+          border="primary sm opacity-75"
+        >
+          <v-card-title class="px-6 pt-5">
+            {{ selectedOperate.title }}
+          </v-card-title>
+          <v-card-text class="overflow-y-auto">
+            {{ selectedOperate.title }} can significantly change the image. Are
+            you certain you want to proceed?
+
+            <v-form @submit.prevent="doOperate">
+              <v-text-field
+                v-model="title"
+                class="my-2"
+                label="title"
+                :rules="[rules.required]"
+              ></v-text-field>
+            </v-form>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-btn
+              :disabled="!selectedOperate || title.length < 1"
+              @click="doOperate"
+              :loading="operationLoading"
+            >
+              Proceed
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <ToolsVGlassCard
         class="overflow-hidden"
         :card-props="{ height: 100 }"
@@ -103,7 +274,8 @@ const scrolling = (e: WheelEvent) => {
             icon
             size="70"
             stacked
-            :disabled="disabledTools"
+            :disabled="disabledTools || checkRequireBands(action.requiredBands)"
+            @click="operate(action)"
           >
             <v-icon size="40" :icon="action.icon"> </v-icon>
             <span class="text-body-2">{{ action.title }}</span>
@@ -111,8 +283,10 @@ const scrolling = (e: WheelEvent) => {
         </v-card-text>
       </ToolsVGlassCard>
     </div>
+    <!-- header -->
     <div class="tool-content">
       <div class="d-flex pt-3 h-100">
+        <!-- sidebar -->
         <v-col class="pa-0" cols="2">
           <ToolsVGlassCard transparent class="h-100 d-flex flex-column">
             <v-card-text class="pa-0">
@@ -120,15 +294,17 @@ const scrolling = (e: WheelEvent) => {
                 <p class="text-primary py-3 pl-4">Exports</p>
                 <v-divider></v-divider>
                 <v-list-item
-                  v-for="(exported, index) in exports"
+                  v-for="(exported, index) in selectedProject?.operation_output"
                   :key="index"
                   class="text-primary"
-                  :title="exported"
-                  :disabled="disabledTools"
+                  :title="exported.unique_name"
                   @click="showExport(exported)"
                 ></v-list-item>
                 <p
-                  v-if="exports.length < 1"
+                  v-if="
+                    !selectedProject ||
+                    selectedProject.operation_output.length < 1
+                  "
                   class="text-primary text-center text-body-1 py-3"
                 >
                   There is no export yet!
@@ -138,15 +314,35 @@ const scrolling = (e: WheelEvent) => {
               </v-list>
             </v-card-text>
 
-            <v-card-actions v-if="selectedProject">
-              <v-btn block color="primary" @click="clearProject">
+            <v-card-actions v-if="selectedProject" class="d-flex flex-column">
+              <v-btn
+                class="ma-0 mt-1"
+                block
+                color="primary"
+                @click="clearShowExport"
+              >
+                Back
+              </v-btn>
+              <v-btn
+                class="ma-0 mt-1"
+                block
+                color="primary"
+                @click="clearProject"
+              >
                 Close Project
               </v-btn>
             </v-card-actions>
           </ToolsVGlassCard>
         </v-col>
+        <!-- sidebar -->
+        <!-- content -->
         <v-col class="pa-0 pl-3 max-h-100" cols="10">
-          <ToolsVGlassCard v-if="selectedProject" transparent class="h-100">
+          <!-- chooseProjectView -->
+          <ToolsVGlassCard
+            v-if="selectedProject && view == 'chooseProject'"
+            transparent
+            class="h-100"
+          >
             <v-card-item class="h-100 d-flex align-center justify-center">
               <v-row>
                 <v-col v-for="band in bands" :key="band" cols="4">
@@ -232,7 +428,13 @@ const scrolling = (e: WheelEvent) => {
               </v-row>
             </v-card-item>
           </ToolsVGlassCard>
-          <ToolsVGlassCard v-else transparent class="h-100">
+          <!-- chooseProjectView -->
+          <!-- chooseFileView -->
+          <ToolsVGlassCard
+            v-else-if="view == 'chooseProject'"
+            transparent
+            class="h-100"
+          >
             <v-card-item class="h-100 d-flex align-center justify-center">
               <v-card
                 border="dashed md primary opacity-75"
@@ -258,9 +460,17 @@ const scrolling = (e: WheelEvent) => {
               </v-card>
             </v-card-item>
           </ToolsVGlassCard>
+          <!-- chooseFileView -->
+          <!-- showExportView -->
+          <ToolsVGlassCard v-else transparent class="h-100">
+            <v-card-text class="h-100 d-flex align-center justify-center">
+              <v-img :src="selectedExport?.image_path" height="100%"></v-img>
+            </v-card-text>
+          </ToolsVGlassCard>
+          <!-- showExportView -->
         </v-col>
+        <!-- content -->
       </div>
     </div>
   </div>
 </template>
-~/types/dto/ChooseFileDto

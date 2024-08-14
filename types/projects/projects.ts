@@ -8,6 +8,14 @@ interface ProjectFile {
   unique_name: string;
 }
 
+interface ExportedFile {
+  id: number;
+  extension: string;
+  image_path: string;
+  file_path: string;
+  unique_name: string;
+}
+
 interface Project {
   created_at: string;
   description: string;
@@ -19,6 +27,7 @@ interface Project {
   tag: string;
   updated_at: string;
   first_file?: ProjectFile;
+  operation_output: ExportedFile[];
 }
 
-export type { Project, ProjectFile };
+export type { Project, ProjectFile, ExportedFile };
