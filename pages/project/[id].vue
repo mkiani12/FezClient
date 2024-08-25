@@ -101,6 +101,7 @@ onMounted(() => {
     <div class="tool-content-2">
       <div class="d-flex pt-3 h-100">
         <v-col class="pa-0" cols="2">
+          <!-- sidebar -->
           <ToolsVGlassCard transparent class="h-100 d-flex flex-column">
             <v-card-text>
               <div class="mb-2 pl-2 text-body-2">
@@ -138,9 +139,28 @@ onMounted(() => {
                     </v-chip>
                   </span>
                 </p>
+                <v-list class="bg-transparent text-primary rounded-xl">
+                  <p class="text-primary py-3">Exports</p>
+                  <v-divider></v-divider>
+                  <v-list-item
+                    v-for="(exported, index) in project.operation_output"
+                    :key="index"
+                    class="text-primary px-0"
+                    :title="exported.unique_name"
+                  ></v-list-item>
+                  <p
+                    v-if="!project || project.operation_output.length < 1"
+                    class="text-primary text-center text-body-1 py-3"
+                  >
+                    There is no export yet!
+                    <br />
+                    try to export something
+                  </p>
+                </v-list>
               </div>
             </v-card-text>
             <v-card-actions>
+              <!-- file upload -->
               <v-dialog
                 v-model="uploadFileDialog"
                 max-width="450"
@@ -180,10 +200,13 @@ onMounted(() => {
                   </v-card-actions>
                 </v-card>
               </v-dialog>
+              <!-- file upload -->
             </v-card-actions>
           </ToolsVGlassCard>
+          <!-- sidebar -->
         </v-col>
         <v-col class="pa-0 pl-3 max-h-100" cols="10">
+          <!-- content -->
           <ToolsVGlassCard transparent class="h-100 d-flex flex-column">
             <v-img
               :src="selectedImage?.image_path"
@@ -213,6 +236,7 @@ onMounted(() => {
               </v-slide-group>
             </v-sheet>
           </ToolsVGlassCard>
+          <!-- content -->
         </v-col>
       </div>
     </div>

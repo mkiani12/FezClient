@@ -1,95 +1,15 @@
 <script lang="ts" setup>
+import CloseIcon from "~icons/material-symbols-light/cancel-outline-rounded";
+import BackIcon from "~icons/material-symbols-light/arrow-circle-left-outline-rounded";
+
+import { actions } from "~/data/actionsData";
+
 import type { Project, ExportedFile } from "~/types/projects/projects";
 import type { SelectedFiles, Band, Action } from "~/types/tools/tools";
 import type { ChooseFileDto } from "~/types/dto/components/ChooseFileDto";
 
 const axios = useApi();
 const { validationRules: rules } = useValidation();
-
-import CloseIcon from "~icons/material-symbols-light/cancel-outline-rounded";
-
-import ImageEnhancementIcon from "~icons/carbon/edge-enhancement";
-import FiltersIcon from "~icons/solar/filters-bold-duotone";
-import MosaicIcon from "~icons/gis/mosaic";
-
-const actions = ref<Action[]>([
-  // ready
-  // todo: fix icons and optional fields and fill required bands
-  {
-    title: "AFVI",
-    type: "afvi",
-    icon: ImageEnhancementIcon,
-    requiredBands: ["SWIR1", "NIR"],
-  },
-  {
-    title: "BI",
-    type: "bi",
-    icon: ImageEnhancementIcon,
-    requiredBands: ["NIR", "GREEN", "RED"],
-  },
-  {
-    title: "NDVI",
-    type: "ndvi",
-    icon: ImageEnhancementIcon,
-    requiredBands: ["RED", "NIR"],
-  },
-  {
-    title: "NDWI",
-    type: "ndwi",
-    icon: ImageEnhancementIcon,
-    requiredBands: ["NIR", "GREEN"],
-  },
-  {
-    title: "SAVI",
-    type: "savi",
-    icon: ImageEnhancementIcon,
-    requiredBands: ["RED", "NIR"],
-  },
-  {
-    title: "UI",
-    type: "ui",
-    icon: ImageEnhancementIcon,
-    requiredBands: ["SWIR2", "NIR"],
-  },
-  {
-    title: "NDVI",
-    type: "ndvi",
-    icon: ImageEnhancementIcon,
-    requiredBands: ["RED", "NIR"],
-  },
-  {
-    title: "SPECTRAL PROFILE",
-    type: "spectral_profile",
-    icon: ImageEnhancementIcon,
-    requiredBands: ["RED", "GREEN", "BLUE", "NIR", "SWIR1", "SWIR2"],
-  },
-  {
-    title: "PCA",
-    type: "pca",
-    icon: ImageEnhancementIcon,
-    requiredBands: ["RED", "GREEN", "BLUE", "NIR", "SWIR1", "SWIR2"],
-  },
-
-  // unready
-  {
-    title: "Image Enhancement",
-    type: "-",
-    icon: ImageEnhancementIcon,
-    requiredBands: [],
-  },
-  {
-    title: "Filters",
-    type: "-",
-    icon: FiltersIcon,
-    requiredBands: [],
-  },
-  {
-    title: "Mosaic",
-    type: "-",
-    icon: MosaicIcon,
-    requiredBands: [],
-  },
-]);
 
 const selectedProject = ref<null | Project>(null);
 
@@ -142,6 +62,7 @@ const clearProject = () => {
     SWIR2: null,
   };
   disabledTools.value = true;
+  clearShowExport();
 };
 
 const selectProject = (project: Project) => {
@@ -153,11 +74,24 @@ const selectedOperate = ref<Action | null>(null);
 const operationDialog = ref(false);
 const title = ref("");
 const operationLoading = ref(false);
+const operationMode = ref<"single" | "group">("single");
+const selectedInnerOperate = ref<Action | null>(null);
 
 const operate = (action: Action) => {
-  selectedOperate.value = action;
+  if (action.childrens && action.childrens.length > 0) {
+    operationMode.value = "group";
+    selectedOperate.value = action;
+  } else {
+    operationMode.value = "single";
+    selectedInnerOperate.value = action;
+  }
   operationDialog.value = true;
   console.log(action);
+};
+
+const selectInnerOperate = (action: Action) => {
+  selectedInnerOperate.value = action;
+  operationMode.value = "single";
 };
 
 const doOperate = () => {
@@ -180,7 +114,7 @@ const doOperate = () => {
   operationLoading.value = true;
   axios
     .post(
-      `/operation/?operation_type=${selectedOperate.value?.type}&project_id=${selectedProject.value?.id}&title=${title.value}`,
+      `/operation/?operation_type=${selectedInnerOperate.value?.type}&project_id=${selectedProject.value?.id}&title=${title.value}`,
       {
         bands,
       }
@@ -201,6 +135,13 @@ const doOperate = () => {
     });
 };
 
+const clearOperate = (value: boolean) => {
+  if (!value) {
+    operationMode.value = "single";
+    selectedOperate.value = null;
+    selectedInnerOperate.value = null;
+  }
+};
 // returns true if required band isn't filled
 const checkRequireBands = (bands: Band[]) => {
   if (bands.length == 0) return false;
@@ -223,18 +164,55 @@ const scrolling = (e: WheelEvent) => {
   <div class="flex flex-column ma-0 h-100 w-100">
     <!-- header -->
     <div class="tool-topbor overflow-x-auto">
-      <v-dialog v-model="operationDialog" max-width="400">
+      <v-dialog
+        v-model="operationDialog"
+        max-width="400"
+        @update:model-value="clearOperate"
+      >
         <v-card
-          v-if="selectedOperate"
+          v-if="operationMode == 'group' && selectedOperate"
           rounded="xl"
           border="primary sm opacity-75"
         >
           <v-card-title class="px-6 pt-5">
             {{ selectedOperate.title }}
           </v-card-title>
+          <v-card-text class="overflow-y-auto pt-0">
+            <v-list v-if="selectedOperate.childrens">
+              <v-list-item
+                v-for="childAction in selectedOperate.childrens"
+                :key="childAction.type"
+                @click="selectInnerOperate(childAction)"
+                :prepend-icon="childAction.icon"
+                :disabled="
+                  disabledTools || checkRequireBands(childAction.requiredBands)
+                "
+              >
+                {{ childAction.title }}
+              </v-list-item>
+            </v-list>
+          </v-card-text>
+        </v-card>
+        <v-card
+          v-else-if="operationMode == 'single' && selectedInnerOperate"
+          rounded="xl"
+          border="primary sm opacity-75"
+        >
+          <v-card-title class="px-6 pt-5">
+            <v-btn
+              v-if="selectedOperate && selectedOperate.childrens"
+              variant="text"
+              icon
+              @click="operationMode = 'group'"
+            >
+              <v-icon :icon="BackIcon"></v-icon>
+            </v-btn>
+
+            {{ selectedInnerOperate.title }}
+          </v-card-title>
           <v-card-text class="overflow-y-auto">
-            {{ selectedOperate.title }} can significantly change the image. Are
-            you certain you want to proceed?
+            {{ selectedInnerOperate.title }} can significantly change the image.
+            Are you certain you want to proceed?
 
             <v-form @submit.prevent="doOperate">
               <v-text-field
@@ -248,7 +226,7 @@ const scrolling = (e: WheelEvent) => {
 
           <v-card-actions>
             <v-btn
-              :disabled="!selectedOperate || title.length < 1"
+              :disabled="!selectedInnerOperate || title.length < 1"
               @click="doOperate"
               :loading="operationLoading"
             >
@@ -274,7 +252,10 @@ const scrolling = (e: WheelEvent) => {
             icon
             size="70"
             stacked
-            :disabled="disabledTools || checkRequireBands(action.requiredBands)"
+            :disabled="
+              disabledTools ||
+              checkRequireBands(action.childrens ? [] : action.requiredBands)
+            "
             @click="operate(action)"
           >
             <v-icon size="40" :icon="action.icon"> </v-icon>
@@ -316,6 +297,7 @@ const scrolling = (e: WheelEvent) => {
 
             <v-card-actions v-if="selectedProject" class="d-flex flex-column">
               <v-btn
+                v-if="selectedExport"
                 class="ma-0 mt-1"
                 block
                 color="primary"

@@ -17,6 +17,7 @@ interface Action {
   type: string;
   icon: SVGAttributes | any;
   requiredBands: Band[];
+  childrens?: Action[];
 }
 
 export type { Band, SelectedFiles, Action };
