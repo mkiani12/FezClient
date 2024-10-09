@@ -183,7 +183,12 @@ onMounted(() => {
                   @update:modelValue="file = null"
                 >
                   <template #activator="{ props: activatorProps }">
-                    <v-btn v-bind="activatorProps" block color="primary">
+                    <v-btn
+                      v-bind="activatorProps"
+                      block
+                      color="primary"
+                      class="ml-0"
+                    >
                       Upload File
                     </v-btn>
                   </template>
