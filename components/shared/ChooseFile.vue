@@ -64,15 +64,7 @@ const uploadFile = () => {
         console.log(e);
         uploading.value = false;
         uploadProgress.value = 0;
-        if (e.response) {
-          const { detail } = e.response.data;
-          if (detail) {
-            console.log(detail);
-            notify.showMessage(detail, "error");
-          }
-        } else {
-          console.log(e);
-        }
+        notify.handleCatch(e);
       });
   }
 };
@@ -92,15 +84,7 @@ const getProjectList = () => {
     })
     .catch((e) => {
       loading.value = false;
-      if (e.response) {
-        const { detail } = e.response.data;
-        if (detail) {
-          console.log(detail);
-          notify.showMessage(detail, "error");
-        }
-      } else {
-        console.log(e);
-      }
+      notify.handleCatch(e);
     });
 };
 
@@ -123,8 +107,17 @@ onMounted(() => {
     </template>
     <v-scroll-y-transition leave-absolute>
       <v-card rounded="xl" border="primary sm opacity-75">
-        <v-card-title class="px-6 pt-5">
+        <v-card-title class="d-flex align-center px-6 pt-5">
           Choose file or upload one
+          <v-btn
+            class="ml-auto"
+            icon
+            variant="text"
+            color="white"
+            @click="chooseFileDialog = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
         </v-card-title>
         <v-card-text class="overflow-y-auto" style="height: 500px">
           <v-row>

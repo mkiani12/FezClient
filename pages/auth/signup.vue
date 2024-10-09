@@ -53,15 +53,7 @@ const signup = async () => {
       });
     })
     .catch((e) => {
-      if (e.message) {
-        const { detail } = e.response._data;
-        if (detail) {
-          console.log(detail);
-          notify.showMessage(detail, "error");
-        }
-      } else {
-        console.log(e);
-      }
+      notify.handleCatch(e);
       loading.value = false;
     });
 };

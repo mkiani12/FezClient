@@ -12,6 +12,7 @@ definePageMeta({
 });
 
 const { t: $t } = useI18n();
+const notify = useSnackbarStore();
 
 useHead({
   title: $t("auth.login"),
@@ -35,7 +36,7 @@ const login = async () => {
       loading.value = false;
     })
     .catch((e) => {
-      console.log(e);
+      notify.handleCatch(e);
       loading.value = false;
     });
 };

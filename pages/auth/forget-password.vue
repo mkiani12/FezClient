@@ -41,15 +41,7 @@ const resetPassword = () => {
     })
     .catch((e) => {
       loading.value = false;
-      if (e.response) {
-        const { detail } = e.response.data;
-        if (detail) {
-          console.log(detail);
-          notify.showMessage(detail, "error");
-        }
-      } else {
-        console.log(e);
-      }
+      notify.handleCatch(e);
     });
 };
 
@@ -71,15 +63,7 @@ const resendConfirmCode = () => {
     })
     .catch((e) => {
       resendLoading.value = false;
-      if (e.response) {
-        const { detail } = e.response.data;
-        if (detail) {
-          console.log(detail);
-          notify.showMessage(detail, "error");
-        }
-      } else {
-        console.log(e);
-      }
+      notify.handleCatch(e);
     });
 };
 
@@ -103,15 +87,7 @@ const checkCode = () => {
     })
     .catch((e) => {
       checkCodeLoading.value = false;
-      if (e.response) {
-        const { detail } = e.response.data;
-        if (detail) {
-          console.log(detail);
-          notify.showMessage(detail, "error");
-        }
-      } else {
-        console.log(e);
-      }
+      notify.handleCatch(e);
     });
 };
 
@@ -143,15 +119,7 @@ const confirm = () => {
     })
     .catch((e) => {
       confirmLoading.value = false;
-      if (e.response) {
-        const { detail } = e.response.data;
-        if (detail) {
-          console.log(detail);
-          notify.showMessage(detail, "error");
-        }
-      } else {
-        console.log(e);
-      }
+      notify.handleCatch(e);
     });
 };
 </script>

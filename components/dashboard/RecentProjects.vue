@@ -39,15 +39,7 @@ const addProject = () => {
       addProjectName.value = "";
       addProjectDescription.value = "";
       addProjectLoading.value = false;
-      if (e.response) {
-        const { detail } = e.response.data;
-        if (detail) {
-          console.log(detail);
-          notify.showMessage(detail, "error");
-        }
-      } else {
-        console.log(e);
-      }
+      notify.handleCatch(e);
     });
 };
 
@@ -68,15 +60,7 @@ const getProjectList = () => {
     })
     .catch((e) => {
       loading.value = false;
-      if (e.response) {
-        const { detail } = e.response.data;
-        if (detail) {
-          console.log(detail);
-          notify.showMessage(detail, "error");
-        }
-      } else {
-        console.log(e);
-      }
+      notify.handleCatch(e);
     });
 };
 
@@ -111,7 +95,18 @@ onMounted(() => {
               </v-btn>
             </template>
             <v-card rounded="xl" border="primary sm opacity-75">
-              <v-card-title class="px-6 pt-5"> Add Project </v-card-title>
+              <v-card-title class="d-flex align-center px-6 pt-5">
+                Add new Project
+                <v-btn
+                  class="ml-auto"
+                  icon
+                  variant="text"
+                  color="white"
+                  @click="addProjectDialog = false"
+                >
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </v-card-title>
               <v-card-text>
                 <v-form v-model="addProjectValidated">
                   <v-text-field

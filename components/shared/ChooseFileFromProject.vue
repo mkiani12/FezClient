@@ -63,15 +63,7 @@ const uploadFile = () => {
         console.log(e);
         uploading.value = false;
         uploadProgress.value = 0;
-        if (e.response) {
-          const { detail } = e.response.data;
-          if (detail) {
-            console.log(detail);
-            notify.showMessage(detail, "error");
-          }
-        } else {
-          console.log(e);
-        }
+        notify.handleCatch(e);
       });
   }
 };
@@ -93,15 +85,7 @@ const getProjectList = () => {
     })
     .catch((e) => {
       loading.value = false;
-      if (e.response) {
-        const { detail } = e.response.data;
-        if (detail) {
-          console.log(detail);
-          notify.showMessage(detail, "error");
-        }
-      } else {
-        console.log(e);
-      }
+      notify.handleCatch(e);
     });
 };
 

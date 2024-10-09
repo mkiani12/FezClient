@@ -9,6 +9,7 @@ import type { SelectedFiles, Band, Action } from "~/types/tools/tools";
 import type { ChooseFileDto } from "~/types/dto/components/ChooseFileDto";
 
 const axios = useApi();
+const notify = useSnackbarStore();
 const { validationRules: rules } = useValidation();
 
 const selectedProject = ref<null | Project>(null);
@@ -127,11 +128,11 @@ const doOperate = () => {
       title.value = "";
       operationLoading.value = false;
     })
-    .catch((err) => {
-      console.log(err);
+    .catch((e) => {
       operationDialog.value = false;
       title.value = "";
       operationLoading.value = false;
+      notify.handleCatch(e);
     });
 };
 
@@ -154,6 +155,10 @@ const checkRequireBands = (bands: Band[]) => {
   return !haveRequireBands;
 };
 
+const tooltipText = (action: Action) => {
+  return `This tool requires ${action.requiredBands.join(",")} bands`;
+};
+
 const scrolling = (e: WheelEvent) => {
   const el = e.target as HTMLElement;
   e.preventDefault();
@@ -174,22 +179,46 @@ const scrolling = (e: WheelEvent) => {
           rounded="xl"
           border="primary sm opacity-75"
         >
-          <v-card-title class="px-6 pt-5">
+          <v-card-title class="d-flex align-center px-6 pt-5">
             {{ selectedOperate.title }}
+            <v-btn
+              class="ml-auto"
+              icon
+              variant="text"
+              color="white"
+              @click="clearOperate(false), (operationDialog = false)"
+            >
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
           </v-card-title>
           <v-card-text class="overflow-y-auto pt-0">
             <v-list v-if="selectedOperate.childrens">
-              <v-list-item
+              <v-tooltip
+                :text="tooltipText(childAction)"
                 v-for="childAction in selectedOperate.childrens"
                 :key="childAction.type"
-                @click="selectInnerOperate(childAction)"
-                :prepend-icon="childAction.icon"
                 :disabled="
-                  disabledTools || checkRequireBands(childAction.requiredBands)
+                  !(
+                    disabledTools ||
+                    checkRequireBands(childAction.requiredBands)
+                  )
                 "
               >
-                {{ childAction.title }}
-              </v-list-item>
+                <template v-slot:activator="{ props }">
+                  <span v-bind="props">
+                    <v-list-item
+                      @click="selectInnerOperate(childAction)"
+                      :prepend-icon="childAction.icon"
+                      :disabled="
+                        disabledTools ||
+                        checkRequireBands(childAction.requiredBands)
+                      "
+                    >
+                      {{ childAction.title }}
+                    </v-list-item>
+                  </span>
+                </template>
+              </v-tooltip>
             </v-list>
           </v-card-text>
         </v-card>

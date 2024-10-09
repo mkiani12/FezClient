@@ -8,8 +8,11 @@ const emit = defineEmits<{
   (e: "choose", file: ChooseProjectDto): void;
 }>();
 
+const view = ref<"addProject" | "chooseProject">("chooseProject");
+
 const axios = useApi();
 const notify = useSnackbarStore();
+const { validationRules: rules } = useValidation();
 
 const chooseProjectDialog = ref(false);
 
@@ -19,6 +22,40 @@ const projectList = ref<Project[]>([]);
 const selectProject = (project: Project) => {
   emit("choose", project);
   chooseProjectDialog.value = false;
+};
+
+const addProjectLoading = ref(false);
+const addProjectValidated = ref(false);
+const addProjectName = ref("");
+const addProjectDescription = ref("");
+
+const addProject = () => {
+  addProjectLoading.value = true;
+
+  const addProjectData = {
+    name: addProjectName.value,
+    description: addProjectDescription.value,
+  };
+
+  axios
+    .post("/project/", addProjectData)
+    .then((result) => {
+      console.log(result);
+      const { data: project } = result;
+      addProjectLoading.value = false;
+      projectList.value.push(project);
+      clearAddProject();
+    })
+    .catch((e) => {
+      addProjectLoading.value = false;
+      notify.handleCatch(e);
+    });
+};
+
+const clearAddProject = () => {
+  addProjectName.value = "";
+  addProjectDescription.value = "";
+  view.value = "chooseProject";
 };
 
 const getProjectList = () => {
@@ -33,15 +70,7 @@ const getProjectList = () => {
     })
     .catch((e) => {
       loading.value = false;
-      if (e.response) {
-        const { detail } = e.response.data;
-        if (detail) {
-          console.log(detail);
-          notify.showMessage(detail, "error");
-        }
-      } else {
-        console.log(e);
-      }
+      notify.handleCatch(e);
     });
 };
 
@@ -55,8 +84,23 @@ onMounted(() => {
       <slot :props="activatorProps"></slot>
     </template>
     <v-scroll-y-transition leave-absolute>
-      <v-card rounded="xl" border="primary sm opacity-75">
-        <v-card-title class="px-6 pt-5"> Choose project </v-card-title>
+      <v-card
+        v-if="view == 'chooseProject'"
+        rounded="xl"
+        border="primary sm opacity-75"
+      >
+        <v-card-title class="d-flex align-center px-6 pt-5">
+          Choose project
+          <v-btn
+            class="ml-auto"
+            icon
+            variant="text"
+            color="white"
+            @click="chooseProjectDialog = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
         <v-card-text class="overflow-y-auto" style="height: 500px">
           <v-row>
             <v-col
@@ -66,6 +110,7 @@ onMounted(() => {
               md="6"
             >
               <v-card
+                min-height="268"
                 border="primary sm opacity-75"
                 class="mx-auto pb-4 rounded-xl overflow-hidden"
                 @click="selectProject(project)"
@@ -89,8 +134,70 @@ onMounted(() => {
                 </v-card-subtitle>
               </v-card>
             </v-col>
+            <v-col cols="12" md="6">
+              <v-card
+                height="100%"
+                min-height="268"
+                border="primary sm opacity-75"
+                class="mx-auto pb-4 rounded-xl overflow-hidden"
+                @click="view = 'addProject'"
+              >
+                <v-card-text
+                  class="d-flex justify-center align-center text-center h-100"
+                >
+                  <div class="text-primary text-h3">
+                    <p class="mb-5">Add a new Project</p>
+                    <v-btn class="ml-auto" icon color="primary">
+                      <v-icon>mdi-plus</v-icon>
+                    </v-btn>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </v-col>
           </v-row>
         </v-card-text>
+      </v-card>
+
+      <v-card v-else rounded="xl" border="primary sm opacity-75">
+        <v-card-title class="d-flex align-center px-6 pt-5">
+          Add new Project
+          <v-btn
+            class="ml-auto"
+            icon
+            variant="text"
+            color="white"
+            @click="chooseProjectDialog = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-card-text>
+          <v-form v-model="addProjectValidated">
+            <v-text-field
+              class="mb-3"
+              v-model="addProjectName"
+              :rules="[rules.required]"
+              label="Project name"
+            ></v-text-field>
+            <v-textarea
+              class="mb-3"
+              v-model="addProjectDescription"
+              label="Description"
+            ></v-textarea>
+          </v-form>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn text="Cancel" color="error" @click="clearAddProject"></v-btn>
+          <v-btn
+            text="Add Project"
+            :disabled="!addProjectValidated"
+            :loading="addProjectLoading"
+            @click="addProject"
+          ></v-btn>
+        </v-card-actions>
       </v-card>
     </v-scroll-y-transition>
   </v-dialog>

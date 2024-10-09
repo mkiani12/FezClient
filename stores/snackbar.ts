@@ -25,5 +25,22 @@ export const useSnackbarStore = defineStore("snackbar", {
       this.visible = false;
       this.timeout = 5000;
     },
+
+    showDefaultError() {
+      this.showMessage("Something went wrong!", "error");
+    },
+
+    handleCatch(e: any) {
+      if (e.response) {
+        const { detail } = e.response.data ?? e.response._data;
+        if (detail) {
+          console.log(detail);
+          this.showMessage(detail, "error");
+        }
+      } else {
+        this.showDefaultError();
+        console.log(e);
+      }
+    },
   },
 });

@@ -48,15 +48,7 @@ const confirm = () => {
       router.push("/auth/login");
     })
     .catch((e) => {
-      if (e.message) {
-        const { detail } = e.response.data;
-        if (detail) {
-          console.log(detail);
-          notify.showMessage(detail, "error");
-        }
-      } else {
-        console.log(e);
-      }
+      notify.handleCatch(e);
       loading.value = false;
     });
 };
@@ -71,15 +63,7 @@ const resendConfirmCode = () => {
       resendLoading.value = false;
     })
     .catch((e) => {
-      if (e.message) {
-        const { detail } = e.response.data;
-        if (detail) {
-          console.log(detail);
-          notify.showMessage(detail, "error");
-        }
-      } else {
-        console.log(e);
-      }
+      notify.handleCatch(e);
       resendLoading.value = false;
     });
 };

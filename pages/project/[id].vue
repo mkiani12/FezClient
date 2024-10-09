@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import moment from "jalali-moment";
-import type { Project } from "~/types/projects/projects";
+import type { Project, ExportedFile } from "~/types/projects/projects";
 
 const route = useRoute();
 const axios = useApi();
@@ -14,9 +14,22 @@ const selectedImageIndex = ref(0);
 const selectedImage = computed(() => {
   return project.value?.files[selectedImageIndex.value];
 });
-
 const selectImage = (index: number) => {
   selectedImageIndex.value = index;
+};
+
+const view = ref<"showFiles" | "showExport">("showFiles");
+const selectedExport = ref<ExportedFile | null>(null);
+
+const showExport = (exported: ExportedFile) => {
+  selectedExport.value = exported;
+  view.value = "showExport";
+  console.log(exported);
+};
+
+const clearShowExport = () => {
+  selectedExport.value = null;
+  view.value = "showFiles";
 };
 
 const uploadFileDialog = ref(false);
@@ -53,15 +66,7 @@ const uploadFile = () => {
         console.log(e);
         uploading.value = false;
         uploadProgress.value = 0;
-        if (e.response) {
-          const { detail } = e.response.data;
-          if (detail) {
-            console.log(detail);
-            notify.showMessage(detail, "error");
-          }
-        } else {
-          console.log(e);
-        }
+        notify.handleCatch(e);
       });
   }
 };
@@ -73,8 +78,8 @@ const getProjectData = () => {
       console.log(selectedProject);
       project.value = selectedProject;
     })
-    .catch((err) => {
-      console.log(err);
+    .catch((e) => {
+      notify.handleCatch(e);
     });
 };
 
@@ -105,109 +110,129 @@ onMounted(() => {
           <ToolsVGlassCard transparent class="h-100 d-flex flex-column">
             <v-card-text>
               <div class="mb-2 pl-2 text-body-2">
-                <p>
+                <div>
                   Last action:
                   <span class="text-primary">
                     {{ project.last_action ?? "No action yet" }}
                   </span>
-                </p>
-                <p class="desc-text mt-2">
+                </div>
+                <div class="desc-text mt-2">
                   Description:
                   <span class="text-primary">
                     {{ project.description }}
                   </span>
-                </p>
+                </div>
               </div>
               <div class="mb-2 pl-2 text-body-2">
-                <p>
+                <div>
                   Created at:
                   <span class="text-primary">
                     {{ moment(project.created_at).format("DD MMMM YYYY") }}
                   </span>
-                </p>
-                <p class="mt-2">
+                </div>
+                <div class="mt-2">
                   Modified
                   <span class="text-primary">
                     {{ moment(project.updated_at).format("DD MMMM YYYY") }}
                   </span>
-                </p>
-                <p class="mt-2">
+                </div>
+                <div class="mt-2">
                   <div class="mb-1">Tags :</div>
                   <span>
                     <v-chip density="compact" color="primary">
                       {{ project.tag }}
                     </v-chip>
                   </span>
-                </p>
+                </div>
                 <v-list class="bg-transparent text-primary rounded-xl">
-                  <p class="text-primary py-3">Exports</p>
+                  <div class="text-primary py-3">Exports</div>
                   <v-divider></v-divider>
                   <v-list-item
                     v-for="(exported, index) in project.operation_output"
                     :key="index"
                     class="text-primary px-0"
                     :title="exported.unique_name"
+                    @click="showExport(exported)"
                   ></v-list-item>
-                  <p
+                  <div
                     v-if="!project || project.operation_output.length < 1"
                     class="text-primary text-center text-body-1 py-3"
                   >
                     There is no export yet!
                     <br />
                     try to export something
-                  </p>
+                  </div>
                 </v-list>
               </div>
             </v-card-text>
             <v-card-actions>
-              <!-- file upload -->
-              <v-dialog
-                v-model="uploadFileDialog"
-                max-width="450"
-                @update:modelValue="file = null"
-              >
-                <template #activator="{ props: activatorProps }">
-                  <v-btn v-bind="activatorProps" block color="primary">
-                    Upload File
-                  </v-btn>
-                </template>
-                <v-card rounded="xl" border="primary sm opacity-75">
-                  <v-card-title class="px-6 pt-5">
-                    Choose a file to Upload
-                  </v-card-title>
-                  <v-card-text>
-                    <v-file-input
-                      v-model="file"
-                      label="File"
-                      accept="image/tiff"
-                      :rules="[mediaRules.justTif]"
-                    >
-                    </v-file-input>
-                  </v-card-text>
-
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-
-                    <v-btn text="Upload" @click="uploadFile" :disabled="!file">
-                      <v-progress-circular
-                        v-if="uploading"
-                        color="white"
-                        size="25"
-                        :model-value="uploadProgress"
-                      ></v-progress-circular>
-                      <span v-else> Upload File </span>
+              <div class="d-flex flex-column w-100">
+                <v-btn
+                  v-if="view == 'showExport'"
+                  class="mb-2"
+                  block
+                  color="primary"
+                  @click="clearShowExport"
+                >
+                  Close export
+                </v-btn>
+                <!-- file upload -->
+                <v-dialog
+                  v-model="uploadFileDialog"
+                  max-width="450"
+                  @update:modelValue="file = null"
+                >
+                  <template #activator="{ props: activatorProps }">
+                    <v-btn v-bind="activatorProps" block color="primary">
+                      Upload File
                     </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-              <!-- file upload -->
+                  </template>
+                  <v-card rounded="xl" border="primary sm opacity-75">
+                    <v-card-title class="px-6 pt-5">
+                      Choose a file to Upload
+                    </v-card-title>
+                    <v-card-text>
+                      <v-file-input
+                        v-model="file"
+                        label="File"
+                        accept="image/tiff"
+                        :rules="[mediaRules.justTif]"
+                      >
+                      </v-file-input>
+                    </v-card-text>
+
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+
+                      <v-btn
+                        text="Upload"
+                        @click="uploadFile"
+                        :disabled="!file"
+                      >
+                        <v-progress-circular
+                          v-if="uploading"
+                          color="white"
+                          size="25"
+                          :model-value="uploadProgress"
+                        ></v-progress-circular>
+                        <span v-else> Upload File </span>
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+                <!-- file upload -->
+              </div>
             </v-card-actions>
           </ToolsVGlassCard>
           <!-- sidebar -->
         </v-col>
         <v-col class="pa-0 pl-3 max-h-100" cols="10">
           <!-- content -->
-          <ToolsVGlassCard transparent class="h-100 d-flex flex-column">
+          <ToolsVGlassCard
+            v-if="view == 'showFiles'"
+            transparent
+            class="h-100 d-flex flex-column"
+          >
             <v-img
               :src="selectedImage?.image_path"
               class="my-4 image-dynamic-height"
@@ -235,6 +260,12 @@ onMounted(() => {
                 </v-slide-group-item>
               </v-slide-group>
             </v-sheet>
+          </ToolsVGlassCard>
+
+          <ToolsVGlassCard v-else transparent class="h-100">
+            <v-card-text class="h-100 d-flex align-center justify-center">
+              <v-img :src="selectedExport?.image_path" height="100%"></v-img>
+            </v-card-text>
           </ToolsVGlassCard>
           <!-- content -->
         </v-col>
