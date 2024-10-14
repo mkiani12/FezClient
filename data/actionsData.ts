@@ -47,6 +47,12 @@ const actions: Action[] = [
         icon: ImageEnhancementIcon,
         requiredBands: ["SWIR2", "NIR"],
       },
+      {
+        title: "NDVI",
+        type: "ndvi",
+        icon: ImageEnhancementIcon,
+        requiredBands: ["RED", "NIR"],
+      },
     ],
   },
   {
@@ -55,25 +61,66 @@ const actions: Action[] = [
     icon: ImageEnhancementIcon,
     requiredBands: ["RED", "GREEN", "BLUE", "NIR", "SWIR1", "SWIR2"],
   },
-  // todo: make tools here Unready
-  // {
-  //   title: "Image Enhancement",
-  //   type: "-",
-  //   icon: ImageEnhancementIcon,
-  //   requiredBands: [],
-  // },
-  // {
-  //   title: "Filters",
-  //   type: "-",
-  //   icon: FiltersIcon,
-  //   requiredBands: [],
-  // },
-  // {
-  //   title: "Mosaic",
-  //   type: "-",
-  //   icon: MosaicIcon,
-  //   requiredBands: [],
-  // },
+  {
+    title: "HSV",
+    type: "hsv",
+    icon: ImageEnhancementIcon,
+    requiredBands: ["RED", "GREEN", "BLUE", "NIR", "SWIR1", "SWIR2"],
+    childrens: [
+      {
+        title: "HSV",
+        type: "hsv",
+        icon: ImageEnhancementIcon,
+        requiredBands: ["GREEN", "BLUE", "NIR"],
+      },
+      {
+        title: "IRHSV",
+        type: "irhsv",
+        icon: ImageEnhancementIcon,
+        requiredBands: ["RED", "SWIR1", "SWIR2"],
+      },
+      {
+        title: "HUE",
+        type: "hue",
+        icon: ImageEnhancementIcon,
+        requiredBands: ["GREEN", "BLUE", "NIR"],
+      },
+      {
+        title: "IRHUE",
+        type: "irhue",
+        icon: ImageEnhancementIcon,
+        requiredBands: ["RED", "SWIR1", "SWIR2"],
+      },
+      {
+        title: "SATURATION",
+        type: "saturation",
+        icon: ImageEnhancementIcon,
+        requiredBands: ["GREEN", "BLUE", "NIR"],
+      },
+      {
+        title: "VALUE",
+        type: "valuehsv",
+        icon: ImageEnhancementIcon,
+        requiredBands: ["GREEN", "BLUE", "NIR"],
+      },
+      {
+        title: "VALUEIR",
+        type: "valueirhsv",
+        icon: ImageEnhancementIcon,
+        requiredBands: ["RED", "SWIR1", "SWIR2"],
+      },
+    ],
+  },
+  {
+    title: "Cluster/ K-means",
+    type: "clustering",
+    icon: ImageEnhancementIcon,
+    requiredBands: ["NIR"],
+    extra_param: {
+      n_clusters: { type: "Number", required: false },
+      random_state: { type: "Number", required: false },
+    },
+  },
 ];
 
 export { actions };

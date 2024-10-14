@@ -298,8 +298,11 @@ const scrolling = (e: WheelEvent) => {
       <div class="d-flex pt-3 h-100">
         <!-- sidebar -->
         <v-col class="pa-0" cols="2">
-          <ToolsVGlassCard transparent class="h-100 d-flex flex-column">
-            <v-card-text class="pa-0">
+          <ToolsVGlassCard
+            transparent
+            class="overflow-hidden h-100 d-flex flex-column"
+          >
+            <v-card-text class="pa-0 overflow-y-auto">
               <v-list class="bg-transparent text-primary rounded-xl">
                 <p class="text-primary py-3 pl-4">Exports</p>
                 <v-divider></v-divider>

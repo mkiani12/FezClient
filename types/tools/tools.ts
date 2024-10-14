@@ -12,12 +12,20 @@ interface SelectedFiles {
   SWIR2: ProjectFile | null;
 }
 
+type ExtraParamDataTypes = "Number" | "String";
+
+interface ExtraParam {
+  type: ExtraParamDataTypes;
+  required: boolean;
+}
+
 interface Action {
   title: string;
   type: string;
   icon: SVGAttributes | any;
   requiredBands: Band[];
   childrens?: Action[];
+  extra_param?: Record<string, ExtraParam>;
 }
 
 export type { Band, SelectedFiles, Action };

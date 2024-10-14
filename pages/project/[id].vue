@@ -107,8 +107,11 @@ onMounted(() => {
       <div class="d-flex pt-3 h-100">
         <v-col class="pa-0" cols="2">
           <!-- sidebar -->
-          <ToolsVGlassCard transparent class="h-100 d-flex flex-column">
-            <v-card-text>
+          <ToolsVGlassCard
+            transparent
+            class="h-100 d-flex flex-column overflow-hidden"
+          >
+            <v-card-text class="overflow-y-auto">
               <div class="mb-2 pl-2 text-body-2">
                 <div>
                   Last action:
