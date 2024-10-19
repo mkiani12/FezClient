@@ -10,14 +10,12 @@ const emit = defineEmits<{
 
 const view = ref<"addProject" | "chooseProject">("chooseProject");
 
-const axios = useApi();
-const notify = useSnackbarStore();
+const projects = useProjectStore();
 const { validationRules: rules } = useValidation();
 
 const chooseProjectDialog = ref(false);
 
 const loading = ref(false);
-const projectList = ref<Project[]>([]);
 
 const selectProject = (project: Project) => {
   emit("choose", project);
@@ -29,7 +27,7 @@ const addProjectValidated = ref(false);
 const addProjectName = ref("");
 const addProjectDescription = ref("");
 
-const addProject = () => {
+const addProject = async () => {
   addProjectLoading.value = true;
 
   const addProjectData = {
@@ -37,19 +35,11 @@ const addProject = () => {
     description: addProjectDescription.value,
   };
 
-  axios
-    .post("/project/", addProjectData)
-    .then((result) => {
-      console.log(result);
-      const { data: project } = result;
-      addProjectLoading.value = false;
-      projectList.value.push(project);
-      clearAddProject();
-    })
-    .catch((e) => {
-      addProjectLoading.value = false;
-      notify.handleCatch(e);
-    });
+  const success = await projects.addProject(addProjectData);
+
+  if (success) clearAddProject();
+
+  addProjectLoading.value = false;
 };
 
 const clearAddProject = () => {
@@ -58,24 +48,12 @@ const clearAddProject = () => {
   view.value = "chooseProject";
 };
 
-const getProjectList = () => {
-  loading.value = true;
-  axios
-    .get("/project/list/?skip=0&limit=10")
-    .then(({ data }) => {
-      console.log(data);
-
-      loading.value = false;
-      projectList.value = data;
-    })
-    .catch((e) => {
-      loading.value = false;
-      notify.handleCatch(e);
-    });
-};
-
-onMounted(() => {
-  getProjectList();
+onMounted(async () => {
+  if (!projects.isLoaded) {
+    loading.value = true;
+    await projects.loadProjects();
+    loading.value = false;
+  }
 });
 </script>
 <template>
@@ -104,7 +82,7 @@ onMounted(() => {
         <v-card-text class="overflow-y-auto" style="height: 500px">
           <v-row>
             <v-col
-              v-for="(project, index) in projectList"
+              v-for="(project, index) in projects.projects"
               :key="index"
               cols="12"
               md="6"

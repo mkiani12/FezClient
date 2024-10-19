@@ -14,12 +14,12 @@ const props = defineProps<{
 
 const axios = useApi();
 const notify = useSnackbarStore();
+const projects = useProjectStore();
 const { mediaRules } = useValidation();
 
 const chooseFileDialog = ref(false);
 
 const loading = ref(false);
-const projectList = ref<Project[]>([]);
 
 const selectedProject = ref<Project | null>(null);
 const file = ref<File | null>(null);
@@ -55,7 +55,7 @@ const uploadFile = () => {
       )
       .then(({ data: newFile }) => {
         console.log(newFile);
-        selectedProject.value?.files.push(newFile);
+        projects.addFileToProject(selectedProject.value?.id ?? 0, newFile);
         uploading.value = false;
         file.value = null;
         uploadProgress.value = 0;
@@ -69,31 +69,17 @@ const uploadFile = () => {
   }
 };
 
-const getProjectList = () => {
-  loading.value = true;
-  axios
-    .get("/project/list/?skip=0&limit=10")
-    .then(({ data }) => {
-      console.log(data);
-
-      selectedProject.value = data.find(
-        (project: Project) => project.id == props.projectId
-      );
-      loading.value = false;
-      projectList.value = data;
-    })
-    .catch((e) => {
-      loading.value = false;
-      notify.handleCatch(e);
-    });
-};
-
 const clearDialog = () => {
   file.value = null;
 };
 
-onMounted(() => {
-  getProjectList();
+onMounted(async () => {
+  if (!projects.isLoaded) {
+    loading.value = true;
+    await projects.loadProjects();
+    selectedProject.value = projects.findProject(props.projectId);
+    loading.value = false;
+  }
 });
 </script>
 <template>

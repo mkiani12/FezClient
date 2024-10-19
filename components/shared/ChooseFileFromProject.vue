@@ -11,14 +11,14 @@ const emit = defineEmits<{
 
 const axios = useApi();
 const notify = useSnackbarStore();
+const projects = useProjectStore();
 const { mediaRules } = useValidation();
 
 const chooseProjectDialog = ref(false);
 
 const loading = ref(false);
-const projectList = ref<Project[]>([]);
 
-const view = ref("projects");
+const view = ref<"projects" | "files">("projects");
 
 const selectedProject = ref<Project | null>(null);
 const file = ref<File | null>(null);
@@ -54,7 +54,7 @@ const uploadFile = () => {
       )
       .then(({ data: newFile }) => {
         console.log(newFile);
-        selectedProject.value?.files.push(newFile);
+        projects.addFileToProject(selectedProject.value?.id ?? 0, newFile);
         uploading.value = false;
         file.value = null;
         uploadProgress.value = 0;
@@ -73,29 +73,17 @@ const selectProject = (project: Project) => {
   selectedProject.value = project;
 };
 
-const getProjectList = () => {
-  loading.value = true;
-  axios
-    .get("/project/list/?skip=0&limit=10")
-    .then(({ data }) => {
-      console.log(data);
-
-      loading.value = false;
-      projectList.value = data;
-    })
-    .catch((e) => {
-      loading.value = false;
-      notify.handleCatch(e);
-    });
-};
-
 const clearDialog = () => {
   view.value = "projects";
   file.value = null;
 };
 
-onMounted(() => {
-  getProjectList();
+onMounted(async () => {
+  if (!projects.isLoaded) {
+    loading.value = true;
+    await projects.loadProjects();
+    loading.value = false;
+  }
 });
 </script>
 <template>
@@ -117,7 +105,7 @@ onMounted(() => {
         <v-card-text class="overflow-y-auto" style="height: 500px">
           <v-row>
             <v-col
-              v-for="(project, index) in projectList"
+              v-for="(project, index) in projects.projects"
               :key="index"
               cols="12"
               md="6"
