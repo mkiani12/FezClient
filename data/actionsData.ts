@@ -117,9 +117,76 @@ const actions: Action[] = [
     icon: ImageEnhancementIcon,
     requiredBands: ["NIR"],
     extra_param: {
-      n_clusters: { type: "Number", required: false },
-      random_state: { type: "Number", required: false },
+      n_clusters: {
+        title: "N clusters",
+        type: "Number",
+        required: true,
+        value: "",
+      },
+      random_state: {
+        title: "Random state",
+        type: "Number",
+        required: true,
+        value: "",
+      },
     },
+  },
+  // todo odd input and tif mode
+  {
+    title: "Filters",
+    type: "filters",
+    icon: ImageEnhancementIcon,
+    requiredBands: [],
+    childrens: [
+      {
+        title: "Guassian",
+        type: "guassion",
+        icon: ImageEnhancementIcon,
+        requiredBands: [],
+      },
+      {
+        title: "Laplacian",
+        type: "laplacian",
+        icon: ImageEnhancementIcon,
+        requiredBands: [],
+        extra_param: {
+          kernel_size: {
+            title: "Kernel size",
+            type: "Number",
+            required: true,
+            value: "",
+          },
+        },
+      },
+      {
+        title: "Median",
+        type: "median",
+        icon: ImageEnhancementIcon,
+        requiredBands: [],
+        extra_param: {
+          kernel_size: {
+            title: "Kernel size",
+            type: "Number",
+            required: true,
+            value: "",
+          },
+        },
+      },
+      {
+        title: "Sobel",
+        type: "sobel",
+        icon: ImageEnhancementIcon,
+        requiredBands: [],
+        extra_param: {
+          kernel_size: {
+            title: "Kernel size",
+            type: "Number",
+            required: true,
+            value: "",
+          },
+        },
+      },
+    ],
   },
 ];
 

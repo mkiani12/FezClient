@@ -10,6 +10,7 @@ import type { ChooseFileDto } from "~/types/dto/components/ChooseFileDto";
 
 const axios = useApi();
 const notify = useSnackbarStore();
+const projects = useProjectStore();
 const { validationRules: rules } = useValidation();
 
 const selectedProject = ref<null | Project>(null);
@@ -112,17 +113,37 @@ const doOperate = () => {
       ? selectedFiles.value.SWIR2.id
       : undefined,
   };
+
+  const extra_params = {} as Record<string, string | number>;
+
+  if (selectedInnerOperate.value?.extra_param) {
+    for (const key in selectedInnerOperate.value?.extra_param) {
+      if (
+        Object.prototype.hasOwnProperty.call(
+          selectedInnerOperate.value?.extra_param,
+          key
+        )
+      ) {
+        const param = selectedInnerOperate.value?.extra_param[key];
+
+        extra_params[key] =
+          param.type == "Number" ? parseInt(param.value) : param.value;
+      }
+    }
+  }
+
   operationLoading.value = true;
   axios
     .post(
       `/operation/?operation_type=${selectedInnerOperate.value?.type}&project_id=${selectedProject.value?.id}&title=${title.value}`,
       {
         bands,
+        extra_params,
       }
     )
     .then(({ data: exported }) => {
       console.log(exported);
-      selectedProject.value?.operation_output.push(exported);
+      projects.addExportToProject(selectedProject.value?.id ?? 0, exported);
       showExport(exported);
       operationDialog.value = false;
       title.value = "";
@@ -247,8 +268,17 @@ const scrolling = (e: WheelEvent) => {
               <v-text-field
                 v-model="title"
                 class="my-2"
-                label="title"
+                label="Title"
                 :rules="[rules.required]"
+              ></v-text-field>
+
+              <v-text-field
+                v-for="param in selectedInnerOperate.extra_param"
+                v-model="param.value"
+                class="my-2"
+                :label="param.title"
+                :type="param.type"
+                :rules="[param.required ? rules.required : true]"
               ></v-text-field>
             </v-form>
           </v-card-text>

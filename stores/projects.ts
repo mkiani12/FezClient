@@ -1,6 +1,10 @@
 // stores/snackbar.ts
 import { defineStore } from "pinia";
-import type { Project, ProjectFile } from "~/types/projects/projects";
+import type {
+  ExportedFile,
+  Project,
+  ProjectFile,
+} from "~/types/projects/projects";
 
 interface AddProjectData {
   name: string;
@@ -69,6 +73,15 @@ export const useProjectStore = defineStore("project", () => {
     }
   };
 
+  const addExportToProject = (projectId: number, exported: ExportedFile) => {
+    const foundedProject = projects.value.find((p) => p.id === projectId);
+    if (!foundedProject) {
+      notify.showDefaultError();
+    } else {
+      foundedProject.operation_output.push(exported);
+    }
+  };
+
   // Expose state and actions
   return {
     isLoaded,
@@ -79,5 +92,6 @@ export const useProjectStore = defineStore("project", () => {
     findProject,
     deleteProject,
     addFileToProject,
+    addExportToProject,
   };
 });

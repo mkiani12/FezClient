@@ -15,8 +15,10 @@ interface SelectedFiles {
 type ExtraParamDataTypes = "Number" | "String";
 
 interface ExtraParam {
+  title: string;
   type: ExtraParamDataTypes;
   required: boolean;
+  value: string;
 }
 
 interface Action {
