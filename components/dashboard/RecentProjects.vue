@@ -259,7 +259,9 @@ onMounted(async () => {
   display: -moz-box;
   display: -webkit-box;
   max-width: 200px;
+  line-clamp: 3;
   -moz-line-clamp: 3;
+  box-orient: vertical;
   -moz-box-orient: vertical;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
