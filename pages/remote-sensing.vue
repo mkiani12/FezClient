@@ -310,7 +310,7 @@ const scrolling = (e: WheelEvent) => {
                   v-for="(exported, index) in selectedProject?.operation_output"
                   :key="index"
                   class="text-primary"
-                  :title="exported.unique_name"
+                  :title="exported.title"
                   @click="showExport(exported)"
                 ></v-list-item>
                 <p

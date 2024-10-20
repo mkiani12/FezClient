@@ -10,6 +10,7 @@ interface ProjectFile {
 
 interface ExportedFile {
   id: number;
+  title: string;
   extension: string;
   image_path: string;
   file_path: string;
@@ -26,7 +27,6 @@ interface Project {
   subtitle: null | string;
   tag: string;
   updated_at: string;
-  first_file?: ProjectFile;
   operation_output: ExportedFile[];
 }
 

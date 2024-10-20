@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import type { Project } from "~/types/projects/projects";
-
 import placeholderImage from "~/assets/placeholders/placeholder.jpg";
 
-const axios = useApi();
 const { validationRules: rules } = useValidation();
-const notify = useSnackbarStore();
 const projects = useProjectStore();
 import moment from "jalali-moment";
 
 const loading = ref(false);
-const projectList = ref<Project[]>([]);
 
 const addProjectDialog = ref(false);
 const addProjectLoading = ref(false);
@@ -19,8 +14,9 @@ const addProjectValidated = ref(false);
 const addProjectName = ref("");
 const addProjectDescription = ref("");
 
-const addProject = () => {
+const addProject = async () => {
   addProjectDialog.value = false;
+
   addProjectLoading.value = true;
 
   const addProjectData = {
@@ -28,45 +24,24 @@ const addProject = () => {
     description: addProjectDescription.value,
   };
 
-  axios
-    .post("/project/", addProjectData)
-    .then((result) => {
-      console.log(result);
-      addProjectName.value = "";
-      addProjectDescription.value = "";
-      addProjectLoading.value = false;
-    })
-    .catch((e) => {
-      addProjectName.value = "";
-      addProjectDescription.value = "";
-      addProjectLoading.value = false;
-      notify.handleCatch(e);
-    });
+  const success = await projects.addProject(addProjectData);
+
+  if (success) clearAddProject();
+
+  addProjectLoading.value = false;
 };
 
-const getProjectList = () => {
-  loading.value = true;
-  axios
-    .get("/project/list/?skip=0&limit=10")
-    .then(({ data }) => {
-      loading.value = false;
-      projectList.value = data;
-      console.log([...data]);
-
-      data.forEach((element: Project) => {
-        if (element.files.length > 0) {
-          element.first_file = element.files.shift();
-        }
-      });
-    })
-    .catch((e) => {
-      loading.value = false;
-      notify.handleCatch(e);
-    });
+const clearAddProject = () => {
+  addProjectName.value = "";
+  addProjectDescription.value = "";
 };
 
-onMounted(() => {
-  getProjectList();
+onMounted(async () => {
+  if (!projects.isLoaded) {
+    loading.value = true;
+    await projects.loadProjects();
+    loading.value = false;
+  }
 });
 </script>
 <template>
@@ -145,7 +120,7 @@ onMounted(() => {
               selected-class="bg-success"
             >
               <v-slide-group-item
-                v-for="(project, index) in projectList"
+                v-for="(project, index) in projects.projects"
                 :key="index"
               >
                 <ToolsVGlassCard
@@ -163,70 +138,65 @@ onMounted(() => {
                     </span>
                   </v-card-title>
                   <v-card-text class="px-4">
-                    <div class="d-flex mb-2">
-                      <div>
-                        <v-img
-                          :src="
-                            project?.first_file &&
-                            project.first_file.thumbnail_path
-                              ? project.first_file.thumbnail_path
-                              : placeholderImage
-                          "
-                          class="rounded-lg border-primary border"
-                          width="80"
-                          height="80"
-                        ></v-img>
+                    <div class="d-flex">
+                      <div class="parent">
+                        <div v-if="project.files.length < 1" class="div1">
+                          <v-img
+                            :src="placeholderImage"
+                            class="rounded-lg border-primary border"
+                            width="100%"
+                            height="100%"
+                          ></v-img>
+                        </div>
+                        <div
+                          v-for="(file, idx) in project.files.slice(0, 5)"
+                          :key="file.id"
+                          :class="`div${idx + 1}`"
+                        >
+                          <v-img
+                            :src="file.thumbnail_path ?? ''"
+                            class="rounded-lg border-primary border"
+                            width="100%"
+                            height="100%"
+                          ></v-img>
+                        </div>
                       </div>
-                      <div class="pl-2 text-body-2">
-                        <p>
+                      <div class="d-flex flex-column pl-3 text-body-2">
+                        <div>
                           Last action:
                           <span class="text-primary">
                             {{ project.last_action ?? "No action yet" }}
                           </span>
-                        </p>
-                        <p class="desc-text mt-2">
+                        </div>
+                        <div class="desc-text mt-2 mb-auto">
                           Description:
                           <span class="text-primary">
                             {{ project.description }}
                           </span>
-                        </p>
-                      </div>
-                    </div>
-                    <div class="d-flex">
-                      <div class="images-box">
-                        <v-img
-                          v-for="file in project.files.slice(0, 4)"
-                          :key="file.id"
-                          :src="file.thumbnail_path ?? ''"
-                          class="rounded-lg border-primary border"
-                          width="35"
-                          height="35"
-                        ></v-img>
-                      </div>
-                      <div class="pl-2 text-body-2">
-                        <p>
+                        </div>
+                        <div>
                           Created at:
                           <span class="text-primary">
                             {{
                               moment(project.created_at).format("DD MMMM YYYY")
                             }}
                           </span>
-                        </p>
-                        <p class="mt-2">
+                        </div>
+                        <div class="mt-2">
                           <span>
                             <v-chip density="compact" color="primary">
                               {{ project.tag }}
                             </v-chip>
                           </span>
-                        </p>
-                        <p class="mt-2">
+                        </div>
+                        <div class="mt-2 mb-1">
                           Modified
                           <span class="text-primary">
                             {{
                               moment(project.updated_at).format("DD MMMM YYYY")
                             }}
                           </span>
-                        </p>
+                        </div>
                       </div>
                     </div>
                   </v-card-text>
@@ -248,7 +218,9 @@ onMounted(() => {
                   </ToolsVGlassCard>
                 </v-slide-group-item>
               </template>
-              <v-slide-group-item v-if="projectList.length < 1 && !loading">
+              <v-slide-group-item
+                v-if="projects.projects.length < 1 && !loading"
+              >
                 <ToolsVGlassCard
                   class="ma-4 border-white"
                   :card-props="{ width: 350, height: 250 }"
@@ -318,28 +290,28 @@ onMounted(() => {
   }
 }
 
-// TODO replace image sections with this
-/**
-<div class="parent">
-  <div class="div1"> </div>
-  <div class="div2"> </div>
-  <div class="div3"> </div>
-  <div class="div4"> </div>
-  <div class="div5"> </div>
-</div>
-
 .parent {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  grid-column-gap: 0px;
-  grid-row-gap: 0px;
+  grid-column-gap: 5px;
+  grid-row-gap: 5px;
+  width: 80px;
 }
 
-.div1 { grid-area: 1 / 1 / 3 / 3; }
-.div2 { grid-area: 3 / 1 / 4 / 2; }
-.div3 { grid-area: 3 / 2 / 4 / 3; }
-.div4 { grid-area: 4 / 1 / 5 / 2; }
-.div5 { grid-area: 4 / 2 / 5 / 3; }
-*/
+.div1 {
+  grid-area: 1 / 1 / 3 / 3;
+}
+.div2 {
+  grid-area: 3 / 1 / 4 / 2;
+}
+.div3 {
+  grid-area: 3 / 2 / 4 / 3;
+}
+.div4 {
+  grid-area: 4 / 1 / 5 / 2;
+}
+.div5 {
+  grid-area: 4 / 2 / 5 / 3;
+}
 </style>

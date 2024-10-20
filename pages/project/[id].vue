@@ -154,7 +154,7 @@ onMounted(() => {
                     v-for="(exported, index) in project.operation_output"
                     :key="index"
                     class="text-primary px-0"
-                    :title="exported.unique_name"
+                    :title="exported.title"
                     @click="showExport(exported)"
                   ></v-list-item>
                   <div

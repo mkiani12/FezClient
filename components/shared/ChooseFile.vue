@@ -77,9 +77,9 @@ onMounted(async () => {
   if (!projects.isLoaded) {
     loading.value = true;
     await projects.loadProjects();
-    selectedProject.value = projects.findProject(props.projectId);
     loading.value = false;
   }
+  selectedProject.value = projects.findProject(props.projectId);
 });
 </script>
 <template>
