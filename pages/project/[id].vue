@@ -75,7 +75,7 @@ const uploadFile = () => {
 };
 
 const deleteProject = () => {
-  projects.showDeleteDialog("Project", selectedProject.value);
+  projects.showDeleteDialog("Project", project.value);
 };
 
 const getProjectData = () => {
