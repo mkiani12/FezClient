@@ -112,7 +112,7 @@ const actions: Action[] = [
     ],
   },
   {
-    title: "Cluster/ K-means",
+    title: "Cluster / \n K-means",
     type: "clustering",
     icon: ImageEnhancementIcon,
     requiredBands: ["NIR"],

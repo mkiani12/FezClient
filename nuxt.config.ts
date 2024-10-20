@@ -112,6 +112,12 @@ export default defineNuxtConfig({
     port: parseInt(process.env.PORT ?? "3000"),
   },
 
+  runtimeConfig: {
+    public: {
+      disableConsole: process.env.NODE_ENV === "production",
+    },
+  },
+
   devServerHandlers: [],
   hooks: {},
   compatibilityDate: "2024-07-14",

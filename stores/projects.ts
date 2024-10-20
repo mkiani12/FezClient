@@ -11,6 +11,8 @@ interface AddProjectData {
   description: string;
 }
 
+type DeleteType = "" | "Project" | "File" | "Export";
+
 export const useProjectStore = defineStore("project", () => {
   const axios = useApi();
   const notify = useSnackbarStore();
@@ -19,6 +21,13 @@ export const useProjectStore = defineStore("project", () => {
   const isLoaded = ref(false);
   const loading = ref(false);
   const projects = ref<Project[]>([]);
+
+  const deleteDialog = ref(false);
+  const deleteType = ref<DeleteType>("");
+  const selectedDeleteObject = ref<Project | ExportedFile | ProjectFile | null>(
+    null
+  );
+  const selectedDeleteProjectId = ref<number>(0);
 
   // Actions
   const loadProjects = async (reload = false) => {
@@ -59,11 +68,6 @@ export const useProjectStore = defineStore("project", () => {
     );
   };
 
-  const deleteProject = (project: Project) => {
-    axios.delete("", { data: project });
-    loadProjects(true);
-  };
-
   const addFileToProject = (projectId: number, file: ProjectFile) => {
     const foundedProject = projects.value.find((p) => p.id === projectId);
     if (!foundedProject) {
@@ -82,16 +86,54 @@ export const useProjectStore = defineStore("project", () => {
     }
   };
 
+  const showDeleteDialog = (
+    type: DeleteType,
+    object: Project | ExportedFile | ProjectFile,
+    projectId?: number
+  ) => {
+    selectedDeleteObject.value = object;
+    selectedDeleteProjectId.value = projectId ?? 0;
+    deleteType.value = type;
+    deleteDialog.value = true;
+  };
+
+  const clearDeleteDialog = () => {
+    deleteType.value = "";
+    deleteDialog.value = false;
+  };
+
+  const doDelete = () => {
+    if (deleteType.value != "") {
+      eval(`delete${deleteType.value}`)();
+    }
+  };
+
+  const deleteProject = () => {
+    loadProjects(true);
+  };
+
+  const deleteFile = () => {
+    loadProjects(true);
+  };
+
+  const deleteExport = () => {
+    loadProjects(true);
+  };
+
   // Expose state and actions
   return {
     isLoaded,
     loading,
     projects,
+    deleteDialog,
+    deleteType,
     loadProjects,
     addProject,
     findProject,
-    deleteProject,
     addFileToProject,
     addExportToProject,
+    showDeleteDialog,
+    clearDeleteDialog,
+    doDelete,
   };
 });

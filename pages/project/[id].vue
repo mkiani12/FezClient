@@ -1,9 +1,12 @@
 <script lang="ts" setup>
+import TrashIcon from "~icons/material-symbols/delete-outline-rounded";
+
 import moment from "jalali-moment";
 import type { Project, ExportedFile } from "~/types/projects/projects";
 
 const route = useRoute();
 const axios = useApi();
+const projects = useProjectStore();
 const { mediaRules } = useValidation();
 const notify = useSnackbarStore();
 
@@ -71,6 +74,10 @@ const uploadFile = () => {
   }
 };
 
+const deleteProject = () => {
+  projects.showDeleteDialog("Project", selectedProject.value);
+};
+
 const getProjectData = () => {
   axios
     .get(`/project/${id}`)
@@ -95,11 +102,15 @@ onMounted(() => {
         :card-props="{ height: 100 }"
         transparent
       >
-        <v-card-title class="text-h2 text-primary">
+        <v-card-title class="d-flex align-center w-100 text-h2 text-primary">
           {{ project.name.toUpperCase() }}
           <span class="text-white text-h5 font-weight-regular">
             {{ project.subtitle }}
           </span>
+
+          <v-btn class="ml-auto" icon variant="text" @click="deleteProject">
+            <v-icon :icon="TrashIcon"></v-icon>
+          </v-btn>
         </v-card-title>
       </ToolsVGlassCard>
     </div>

@@ -20,6 +20,7 @@ const { dir } = localeProperties.value;
       </div>
     </v-app>
   </v-locale-provider>
+  <SharedDeleteDialog />
 </template>
 
 <style lang="scss">

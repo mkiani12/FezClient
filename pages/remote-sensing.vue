@@ -318,7 +318,13 @@ const scrolling = (e: WheelEvent) => {
             @click="operate(action)"
           >
             <v-icon size="40" :icon="action.icon"> </v-icon>
-            <span class="text-body-2">{{ action.title }}</span>
+            <div
+              class="tools-title text-body-2 d-flex flex-column justify-center"
+            >
+              <div>
+                {{ action.title }}
+              </div>
+            </div>
           </v-btn>
         </v-card-text>
       </ToolsVGlassCard>
@@ -518,3 +524,9 @@ const scrolling = (e: WheelEvent) => {
     </div>
   </div>
 </template>
+
+<style lang="scss">
+.tools-title {
+  height: 35px;
+}
+</style>
