@@ -1,7 +1,6 @@
 // stores/snackbar.ts
 import { defineStore } from "pinia";
 import type { Project, ProjectFile } from "~/types/projects/projects";
-const axios = useApi();
 
 interface AddProjectData {
   name: string;
@@ -9,6 +8,7 @@ interface AddProjectData {
 }
 
 export const useProjectStore = defineStore("project", () => {
+  const axios = useApi();
   const notify = useSnackbarStore();
 
   // State
