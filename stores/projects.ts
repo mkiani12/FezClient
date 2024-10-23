@@ -153,6 +153,7 @@ export const useProjectStore = defineStore("project", () => {
     findProject,
     addFileToProject,
     addExportToProject,
+    clearDeleteDialog,
     showDeleteDialog,
     doDelete,
   };
