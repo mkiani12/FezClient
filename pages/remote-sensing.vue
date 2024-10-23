@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import CloseIcon from "~icons/material-symbols-light/cancel-outline-rounded";
 import BackIcon from "~icons/material-symbols-light/arrow-circle-left-outline-rounded";
+import TrashIcon from "~icons/material-symbols/delete-outline-rounded";
 
 import { actions } from "~/data/actionsData";
 
@@ -12,6 +13,7 @@ const axios = useApi();
 const notify = useSnackbarStore();
 const projects = useProjectStore();
 const { validationRules: rules } = useValidation();
+const { $listen, $off } = useNuxtApp();
 
 const selectedProject = ref<null | Project>(null);
 
@@ -164,6 +166,17 @@ const clearOperate = (value: boolean) => {
     selectedInnerOperate.value = null;
   }
 };
+
+const deleteExport = () => {
+  if (selectedExport.value && selectedProject.value) {
+    projects.showDeleteDialog(
+      "Export",
+      selectedExport.value,
+      selectedProject.value.id
+    );
+  }
+};
+
 // returns true if required band isn't filled
 const checkRequireBands = (bands: Band[]) => {
   if (bands.length == 0) return false;
@@ -185,6 +198,16 @@ const scrolling = (e: WheelEvent) => {
   e.preventDefault();
   el.scrollLeft += e.deltaY;
 };
+
+onMounted(() => {
+  $listen("project:delete-export", () => {
+    projects.loadProjects(true);
+  });
+});
+
+onBeforeUnmount(() => {
+  $off("project:delete-export");
+});
 </script>
 <template>
   <div class="flex flex-column ma-0 h-100 w-100">
@@ -513,6 +536,15 @@ const scrolling = (e: WheelEvent) => {
           <!-- chooseFileView -->
           <!-- showExportView -->
           <ToolsVGlassCard v-else transparent class="h-100">
+            <v-btn
+              class="position-absolute right-0 top-0 mr-3 mt-3 z-10"
+              icon
+              variant="text"
+              @click="deleteExport"
+            >
+              <v-icon :icon="TrashIcon"></v-icon>
+              <v-tooltip activator="parent"> Delete Export </v-tooltip>
+            </v-btn>
             <v-card-text class="h-100 d-flex align-center justify-center">
               <v-img :src="selectedExport?.image_path" height="100%"></v-img>
             </v-card-text>

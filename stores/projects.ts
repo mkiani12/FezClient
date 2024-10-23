@@ -16,6 +16,7 @@ type DeleteType = "" | "Project" | "File" | "Export";
 export const useProjectStore = defineStore("project", () => {
   const axios = useApi();
   const notify = useSnackbarStore();
+  const { $event } = useNuxtApp();
 
   // State
   const isLoaded = ref(false);
@@ -59,6 +60,19 @@ export const useProjectStore = defineStore("project", () => {
       success = false;
     }
     return success;
+  };
+
+  const getProject = async (id: number | string): Promise<Project | null> => {
+    let foundedProject: null | Project = null;
+    await axios
+      .get(`/project/${id}`)
+      .then(({ data }) => {
+        foundedProject = data;
+      })
+      .catch((e) => {
+        notify.handleCatch(e);
+      });
+    return foundedProject;
   };
 
   const findProject = (projectId: number | string): Project | null => {
@@ -110,14 +124,20 @@ export const useProjectStore = defineStore("project", () => {
 
   const deleteProject = () => {
     loadProjects(true);
+    clearDeleteDialog();
+    $event("project:delete-project");
   };
 
   const deleteFile = () => {
     loadProjects(true);
+    clearDeleteDialog();
+    $event("project:delete-file");
   };
 
   const deleteExport = () => {
     loadProjects(true);
+    clearDeleteDialog();
+    $event("project:delete-export");
   };
 
   // Expose state and actions
@@ -129,11 +149,11 @@ export const useProjectStore = defineStore("project", () => {
     deleteType,
     loadProjects,
     addProject,
+    getProject,
     findProject,
     addFileToProject,
     addExportToProject,
     showDeleteDialog,
-    clearDeleteDialog,
     doDelete,
   };
 });

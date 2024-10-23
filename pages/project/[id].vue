@@ -2,13 +2,19 @@
 import TrashIcon from "~icons/material-symbols/delete-outline-rounded";
 
 import moment from "jalali-moment";
-import type { Project, ExportedFile } from "~/types/projects/projects";
+import type {
+  Project,
+  ExportedFile,
+  ProjectFile,
+} from "~/types/projects/projects";
 
 const route = useRoute();
+const router = useRouter();
 const axios = useApi();
 const projects = useProjectStore();
 const { mediaRules } = useValidation();
 const notify = useSnackbarStore();
+const { $listen, $off } = useNuxtApp();
 
 const id = route.params.id;
 const project = ref<Project | null>(null);
@@ -17,13 +23,13 @@ const selectedImageIndex = ref(0);
 const selectedImage = computed(() => {
   return project.value?.files[selectedImageIndex.value];
 });
+
 const selectImage = (index: number) => {
   selectedImageIndex.value = index;
 };
 
 const view = ref<"showFiles" | "showExport">("showFiles");
 const selectedExport = ref<ExportedFile | null>(null);
-
 const showExport = (exported: ExportedFile) => {
   selectedExport.value = exported;
   view.value = "showExport";
@@ -75,23 +81,47 @@ const uploadFile = () => {
 };
 
 const deleteProject = () => {
-  projects.showDeleteDialog("Project", project.value);
+  if (project.value) {
+    projects.showDeleteDialog("Project", project.value);
+  }
 };
 
-const getProjectData = () => {
-  axios
-    .get(`/project/${id}`)
-    .then(({ data: selectedProject }) => {
-      console.log(selectedProject);
-      project.value = selectedProject;
-    })
-    .catch((e) => {
-      notify.handleCatch(e);
-    });
+const deleteExport = () => {
+  if (selectedExport.value && project.value) {
+    projects.showDeleteDialog("Export", selectedExport.value, project.value.id);
+  }
+};
+
+const deleteFile = (file: ProjectFile) => {
+  if (file && project.value) {
+    projects.showDeleteDialog("File", file, project.value.id);
+  }
+};
+
+const getProjectData = async () => {
+  project.value = await projects.getProject(`${id}`);
 };
 
 onMounted(() => {
+  $listen("project:delete-project", () => {
+    router.push("/");
+  });
+
+  $listen("project:delete-file", () => {
+    getProjectData();
+  });
+
+  $listen("project:delete-export", () => {
+    getProjectData();
+  });
+
   getProjectData();
+});
+
+onBeforeUnmount(() => {
+  $off("project:delete-project");
+  $off("project:delete-file");
+  $off("project:delete-export");
 });
 </script>
 <template>
@@ -110,6 +140,7 @@ onMounted(() => {
 
           <v-btn class="ml-auto" icon variant="text" @click="deleteProject">
             <v-icon :icon="TrashIcon"></v-icon>
+            <v-tooltip activator="parent"> Delete Project </v-tooltip>
           </v-btn>
         </v-card-title>
       </ToolsVGlassCard>
@@ -253,10 +284,21 @@ onMounted(() => {
             class="h-100 d-flex flex-column"
           >
             <v-img
+              v-if="selectedImage"
               :src="selectedImage?.image_path"
               class="my-4 image-dynamic-height"
               contain
-            ></v-img>
+            >
+              <v-btn
+                class="position-absolute right-0 top-0 mr-3 z-10"
+                icon
+                variant="text"
+                @click="deleteFile(selectedImage)"
+              >
+                <v-icon :icon="TrashIcon"></v-icon>
+                <v-tooltip activator="parent"> Delete File </v-tooltip>
+              </v-btn>
+            </v-img>
             <v-sheet class="mt-auto" color="transparent">
               <v-slide-group v-model="selectedImageIndex">
                 <v-slide-group-item
@@ -269,12 +311,29 @@ onMounted(() => {
                     width="150"
                     border="primary sm opacity-75"
                   >
-                    <v-img
-                      :src="image.thumbnail_path"
-                      height="150"
-                      contain
-                      @click="selectImage(index)"
-                    ></v-img>
+                    <v-hover v-slot:default="{ isHovering, props }">
+                      <v-img
+                        :src="image.thumbnail_path"
+                        height="150"
+                        contain
+                        v-bind="props"
+                        @click="selectImage(index)"
+                      >
+                        <v-expand-transition>
+                          <v-btn
+                            v-if="isHovering"
+                            class="position-absolute right-0 top-0 z-10"
+                            icon
+                            @click="deleteFile(image)"
+                          >
+                            <v-icon :icon="TrashIcon"></v-icon>
+                            <v-tooltip activator="parent">
+                              Delete File
+                            </v-tooltip>
+                          </v-btn>
+                        </v-expand-transition>
+                      </v-img>
+                    </v-hover>
                   </v-card>
                 </v-slide-group-item>
               </v-slide-group>
@@ -282,6 +341,15 @@ onMounted(() => {
           </ToolsVGlassCard>
 
           <ToolsVGlassCard v-else transparent class="h-100">
+            <v-btn
+              class="position-absolute right-0 top-0 mr-3 mt-3 z-10"
+              icon
+              variant="text"
+              @click="deleteExport"
+            >
+              <v-icon :icon="TrashIcon"></v-icon>
+              <v-tooltip activator="parent"> Delete Export </v-tooltip>
+            </v-btn>
             <v-card-text class="h-100 d-flex align-center justify-center">
               <v-img :src="selectedExport?.image_path" height="100%"></v-img>
             </v-card-text>

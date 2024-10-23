@@ -1,8 +1,9 @@
 import mitt from "mitt";
 
 type Events = {
-  // "op:job-changed": undefined | any;
-  // "op:job-change": undefined | any;
+  "project:delete-project": undefined | any;
+  "project:delete-file": undefined | any;
+  "project:delete-export": undefined | any;
 };
 
 export default defineNuxtPlugin(() => {
