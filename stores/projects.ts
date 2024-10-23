@@ -117,8 +117,16 @@ export const useProjectStore = defineStore("project", () => {
   };
 
   const doDelete = () => {
-    if (deleteType.value != "") {
-      eval(`delete${deleteType.value}`)();
+    switch (deleteType.value) {
+      case "Project":
+        deleteProject();
+        break;
+      case "File":
+        deleteFile();
+        break;
+      case "Export":
+        deleteExport();
+        break;
     }
   };
 
