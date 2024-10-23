@@ -3,13 +3,22 @@ import type { ProjectFile } from "../projects/projects";
 
 type Band = "RED" | "GREEN" | "BLUE" | "NIR" | "SWIR1" | "SWIR2";
 
-interface SelectedFiles {
+interface SelectedBands {
   RED: ProjectFile | null;
   GREEN: ProjectFile | null;
   BLUE: ProjectFile | null;
   NIR: ProjectFile | null;
   SWIR1: ProjectFile | null;
   SWIR2: ProjectFile | null;
+}
+
+interface SelectedFiles {
+  bands: SelectedBands;
+  before_after: {
+    before: SelectedBands;
+    after: SelectedBands;
+  };
+  tif: ProjectFile | null;
 }
 
 type ExtraParamDataTypes = "Number" | "String";
@@ -30,4 +39,26 @@ interface Action {
   extra_param?: Record<string, ExtraParam>;
 }
 
-export type { Band, SelectedFiles, Action };
+type OperationModeValue = "bands" | "before_after" | "tif";
+
+interface OperationMode {
+  title: string;
+  icon: SVGAttributes | any;
+  value: OperationModeValue;
+}
+
+interface ActionList {
+  bands: Action[];
+  before_after: Action[];
+  tif: Action[];
+}
+
+export type {
+  Band,
+  SelectedBands,
+  SelectedFiles,
+  Action,
+  ActionList,
+  OperationMode,
+  OperationModeValue,
+};
