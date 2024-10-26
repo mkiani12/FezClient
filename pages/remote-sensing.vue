@@ -5,6 +5,7 @@ import TrashIcon from "~icons/material-symbols/delete-outline-rounded";
 import BandIcon from "~icons/material-symbols/document-scanner-outline-rounded";
 import BeforeAfterIcon from "~icons/material-symbols/two-pager-rounded";
 import TifIcon from "~icons/material-symbols/imagesmode-outline";
+import FixIcon from "~icons/material-symbols-light/settings-alert-outline-rounded";
 
 import { actions } from "~/data/actionsData";
 
@@ -647,7 +648,30 @@ onBeforeUnmount(() => {
               </v-row>
             </v-card-item>
             <v-card-item
-              v-if="selectedOperationMode.value == 'tif'"
+              v-else-if="selectedOperationMode.value == 'before_after'"
+              class="h-100 d-flex align-center justify-center"
+            >
+              <v-card
+                border="dashed md primary opacity-75"
+                class="rounded-xl text-center"
+                color="transparent"
+                max-width="500"
+                max-height="400"
+              >
+                <v-card-text
+                  class="d-flex flex-column justify-center align-center h-100"
+                >
+                  <v-icon color="primary" size="100" :icon="FixIcon"></v-icon>
+                  <p class="text-primary my-6">
+                    Exciting changes are coming to this page! We're working hard
+                    to enhance your remote sensing experience. Please come back
+                    soon to explore the new features.
+                  </p>
+                </v-card-text>
+              </v-card>
+            </v-card-item>
+            <v-card-item
+              v-else-if="selectedOperationMode.value == 'tif'"
               class="h-100 d-flex align-center justify-center"
             >
               <v-row>
