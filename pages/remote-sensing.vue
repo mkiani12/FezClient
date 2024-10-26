@@ -10,7 +10,6 @@ import { actions } from "~/data/actionsData";
 
 import type { Project, ExportedFile } from "~/types/projects/projects";
 import type {
-  OperationModeValue,
   Band,
   Action,
   OperationMode,
@@ -82,7 +81,6 @@ const selectedExport = ref<ExportedFile | null>(null);
 const showExport = (exported: ExportedFile) => {
   selectedExport.value = exported;
   view.value = "showExport";
-  console.log(exported);
 };
 
 const clearShowExport = () => {
@@ -208,7 +206,7 @@ const prepareOperationData = () => {
     };
   }
 
-  const extra_params = {} as Record<string, string | number>;
+  const extra_params = {} as Record<string, string | number | null>;
 
   if (selectedInnerOperate.value?.extra_param) {
     for (const key in selectedInnerOperate.value?.extra_param) {
@@ -220,8 +218,11 @@ const prepareOperationData = () => {
       ) {
         const param = selectedInnerOperate.value?.extra_param[key];
 
-        extra_params[key] =
-          param.type == "Number" ? parseInt(param.value) : param.value;
+        extra_params[key] = param.value
+          ? param.type == "Number"
+            ? parseInt(param.value)
+            : param.value
+          : null;
       }
     }
   }
@@ -334,7 +335,7 @@ onBeforeUnmount(() => {
     <div class="tool-topbor overflow-x-auto">
       <v-dialog
         v-model="operationDialog"
-        max-width="400"
+        max-width="450"
         @update:model-value="clearOperate"
       >
         <v-card
@@ -421,6 +422,7 @@ onBeforeUnmount(() => {
                 :label="param.title"
                 :type="param.type"
                 :rules="[param.required ? rules.required : true]"
+                :hint="param.typeHint"
               ></v-text-field>
             </v-form>
           </v-card-text>

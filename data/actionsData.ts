@@ -123,12 +123,14 @@ const actions: ActionList = {
           type: "Number",
           required: true,
           value: "",
+          typeHint: "positive number greater than or equal to 1",
         },
         random_state: {
           title: "Random state",
           type: "Number",
-          required: true,
+          required: false,
           value: "",
+          typeHint: "positive number and 0, also could be None (null)",
         },
       },
     },
@@ -158,6 +160,7 @@ const actions: ActionList = {
               type: "Number",
               required: true,
               value: "",
+              typeHint: "Positive Odd Integer, also must be a positive (n > 0)",
             },
           },
         },
@@ -172,6 +175,7 @@ const actions: ActionList = {
               type: "Number",
               required: true,
               value: "",
+              typeHint: "Positive Odd Integer, also must be a positive (n > 0)",
             },
           },
         },
@@ -186,6 +190,7 @@ const actions: ActionList = {
               type: "Number",
               required: true,
               value: "",
+              typeHint: "Positive Odd Integer, also must be a positive (n > 0)",
             },
           },
         },
@@ -195,3 +200,151 @@ const actions: ActionList = {
 };
 
 export { actions };
+
+/**
+ const actions: ActionList = {
+  bands: [
+    {
+      title: 'SPECTRAL INDICES',
+      type: 'spectral_indices',
+      icon: ImageEnhancementIcon,
+      requiredBands: ['RED', 'GREEN', 'NIR', 'SWIR1', 'SWIR2'],
+      childrens: [
+        {
+          title: 'AFVI',
+          type: 'afvi',
+          icon: ImageEnhancementIcon,
+          requiredBands: ['SWIR1', 'NIR'],
+        },
+        {
+          title: 'BI',
+          type: 'bi',
+          icon: ImageEnhancementIcon,
+          requiredBands: ['NIR', 'GREEN', 'RED'],
+        },
+        {
+          title: 'NDVI',
+          type: 'ndvi',
+          icon: ImageEnhancementIcon,
+          requiredBands: ['RED', 'NIR'],
+        },
+        {
+          title: 'NDWI',
+          type: 'ndwi',
+          icon: ImageEnhancementIcon,
+          requiredBands: ['NIR', 'GREEN'],
+        },
+        {
+          title: 'SAVI',
+          type: 'savi',
+          icon: ImageEnhancementIcon,
+          requiredBands: ['RED', 'NIR'],
+        },
+        {
+          title: 'UI',
+          type: 'ui',
+          icon: ImageEnhancementIcon,
+          requiredBands: ['SWIR2', 'NIR'],
+        },
+        {
+          title: 'NDVI',
+          type: 'ndvi',
+          icon: ImageEnhancementIcon,
+          requiredBands: ['RED', 'NIR'],
+        },
+      ],
+    },
+    {
+      title: 'SPECTRAL PROFILE',
+      type: 'spectral_profile',
+      icon: ImageEnhancementIcon,
+      requiredBands: ['RED', 'GREEN', 'BLUE', 'NIR', 'SWIR1', 'SWIR2'],
+    },
+    {
+      title: 'Cluster / \n K-means',
+      type: 'clustering',
+      icon: ImageEnhancementIcon,
+      requiredBands: ['NIR'],
+      extra_param: {
+        n_clusters: {
+          title: 'N clusters',
+          type: 'Number',
+          required: true,
+          value: '',
+          typeHint: 'positive number greater than or equal to 1',
+        },
+        random_state: {
+          title: 'Random state',
+          type: 'Number',
+          required: false,
+          value: '',
+          typeHint: 'positive number and 0, also could be None (null)',
+        },
+      },
+    },
+  ],
+  'before-after': [],
+  tif: [
+    {
+      title: 'Filters',
+      type: 'filters',
+      icon: ImageEnhancementIcon,
+      requiredBands: [],
+      childrens: [
+        {
+          title: 'Guassian',
+          type: 'guassion',
+          icon: ImageEnhancementIcon,
+          requiredBands: [],
+        },
+        {
+          title: 'Laplacian',
+          type: 'laplacian',
+          icon: ImageEnhancementIcon,
+          requiredBands: [],
+          extra_param: {
+            kernel_size: {
+              title: 'Kernel size',
+              type: 'Number',
+              required: true,
+              value: '',
+              typeHint: 'Positive Odd Integer, also must be a positive (n > 0)',
+            },
+          },
+        },
+        {
+          title: 'Median',
+          type: 'median',
+          icon: ImageEnhancementIcon,
+          requiredBands: [],
+          extra_param: {
+            kernel_size: {
+              title: 'Kernel size',
+              type: 'Number',
+              required: true,
+              value: '',
+              typeHint: 'Positive Odd Integer, also must be a positive (n > 0)',
+            },
+          },
+        },
+        {
+          title: 'Sobel',
+          type: 'sobel',
+          icon: ImageEnhancementIcon,
+          requiredBands: [],
+          extra_param: {
+            kernel_size: {
+              title: 'Kernel size',
+              type: 'Number',
+              required: true,
+              value: '',
+              typeHint: 'Positive Odd Integer, also must be a positive (n > 0)',
+            },
+          },
+        },
+      ],
+    },
+  ],
+};
+
+ */

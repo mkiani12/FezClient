@@ -28,6 +28,7 @@ interface ExtraParam {
   type: ExtraParamDataTypes;
   required: boolean;
   value: string;
+  typeHint?: string;
 }
 
 interface Action {
