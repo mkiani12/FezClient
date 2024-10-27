@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import TrashIcon from "~icons/material-symbols/delete-outline-rounded";
+import NoFileIcon from "~icons/circum/file-off";
 
 import moment from "jalali-moment";
 import type {
@@ -66,6 +67,7 @@ const uploadFile = () => {
       .then(({ data: newFile }) => {
         console.log(newFile);
         project.value?.files.push(newFile);
+        projects.addFileToProject(project.value?.id ?? 0, newFile);
         uploading.value = false;
         file.value = null;
         uploadProgress.value = 0;
@@ -233,6 +235,7 @@ onBeforeUnmount(() => {
                         v-model="file"
                         label="File"
                         accept="image/tiff"
+                        :disabled="uploading"
                         :rules="[mediaRules.justTif]"
                       >
                       </v-file-input>
@@ -270,6 +273,32 @@ onBeforeUnmount(() => {
             transparent
             class="h-100 d-flex flex-column"
           >
+            <v-card
+              v-if="project.files.length < 1"
+              border="dashed md primary opacity-75"
+              class="rounded-xl text-center mx-auto my-auto"
+              color="transparent"
+              max-width="500"
+              max-height="400"
+            >
+              <v-card-text
+                class="d-flex flex-column justify-center align-center h-100"
+              >
+                <v-icon color="primary" size="100" :icon="NoFileIcon"></v-icon>
+                <p class="text-primary my-6">
+                  No file uploaded yet!
+                  <br />
+                  try to upload one
+                </p>
+                <v-btn
+                  color="primary"
+                  class="ml-0"
+                  @click="uploadFileDialog = true"
+                >
+                  Upload File
+                </v-btn>
+              </v-card-text>
+            </v-card>
             <v-img
               v-if="selectedImage"
               :src="selectedImage?.image_path"

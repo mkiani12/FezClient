@@ -148,6 +148,7 @@ onMounted(async () => {
                 v-model="file"
                 label="File"
                 accept="image/tiff"
+                :disabled="uploading"
                 :rules="[mediaRules.justTif]"
               >
                 <template #append>
