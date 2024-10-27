@@ -102,6 +102,20 @@ export default defineNuxtConfig({
     define: {
       "process.env.DEBUG": false,
     },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          verbose: true,
+          logger: {
+            warn(message: any, options: any) {
+              if (!message.includes("deprec")) {
+                console.warn(message, options);
+              }
+            },
+          },
+        },
+      },
+    },
   },
 
   nitro: {

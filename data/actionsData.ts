@@ -1,6 +1,9 @@
 import ImageEnhancementIcon from "~icons/carbon/edge-enhancement";
+import BandIcon from "~icons/material-symbols/document-scanner-outline-rounded";
+import BeforeAfterIcon from "~icons/material-symbols/two-pager-rounded";
+import TifIcon from "~icons/material-symbols/imagesmode-outline";
 
-import type { ActionList } from "~/types/tools/tools";
+import type { ActionList, OperationMode } from "~/types/tools/tools";
 
 // todo odd input and tif mode
 
@@ -199,7 +202,17 @@ const actions: ActionList = {
   ],
 };
 
-export { actions };
+const operationModes: OperationMode[] = [
+  { title: "Bands", icon: BandIcon, value: "bands" },
+  {
+    title: "Before & after(bands)",
+    icon: BeforeAfterIcon,
+    value: "before_after",
+  },
+  { title: "Single file", icon: TifIcon, value: "tif" },
+];
+
+export { actions, operationModes };
 
 /**
  const actions: ActionList = {

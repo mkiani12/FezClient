@@ -1,8 +1,6 @@
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
-import VueApexCharts from "vue3-apexcharts";
-import VueTablerIcons from "vue-tabler-icons";
 import { LightTheme } from "@/theme/LightTheme";
 import { DarkTheme } from "@/theme/DarkTheme";
 import defaults from "./vuetify/defaults";
@@ -12,10 +10,6 @@ import "@/scss/style.scss";
 
 export default defineNuxtPlugin((nuxtApp) => {
   // config variables
-
-  nuxtApp.$v_variant = "outlined";
-  nuxtApp.$v_btn_variant = "outlined";
-
   const vuetify = createVuetify({
     components,
     directives,
@@ -30,6 +24,4 @@ export default defineNuxtPlugin((nuxtApp) => {
   });
 
   nuxtApp.vueApp.use(vuetify);
-  nuxtApp.vueApp.use(VueApexCharts);
-  nuxtApp.vueApp.use(VueTablerIcons);
 });
