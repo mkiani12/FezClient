@@ -86,12 +86,6 @@ const deleteProject = () => {
   }
 };
 
-const deleteExport = () => {
-  if (selectedExport.value && project.value) {
-    projects.showDeleteDialog("Export", selectedExport.value, project.value.id);
-  }
-};
-
 const deleteFile = (file: ProjectFile) => {
   if (file && project.value) {
     projects.showDeleteDialog("File", file, project.value.id);
@@ -189,25 +183,11 @@ onBeforeUnmount(() => {
                     </v-chip>
                   </span>
                 </div>
-                <v-list class="bg-transparent text-primary rounded-xl">
-                  <div class="text-primary py-3">Exports</div>
-                  <v-divider></v-divider>
-                  <v-list-item
-                    v-for="(exported, index) in project.operation_output"
-                    :key="index"
-                    class="text-primary px-0"
-                    :title="exported.title"
-                    @click="showExport(exported)"
-                  ></v-list-item>
-                  <div
-                    v-if="!project || project.operation_output.length < 1"
-                    class="text-primary text-center text-body-1 py-3"
-                  >
-                    There is no export yet!
-                    <br />
-                    try to export something
-                  </div>
-                </v-list>
+                <SharedExportList
+                  :exports="project?.operation_output ?? []"
+                  @show-export="showExport"
+                  no-padding
+                />
               </div>
             </v-card-text>
             <v-card-actions>
@@ -340,20 +320,11 @@ onBeforeUnmount(() => {
             </v-sheet>
           </ToolsVGlassCard>
 
-          <ToolsVGlassCard v-else transparent class="h-100">
-            <v-btn
-              class="position-absolute right-0 top-0 mr-3 mt-3 z-10"
-              icon
-              variant="text"
-              @click="deleteExport"
-            >
-              <v-icon :icon="TrashIcon"></v-icon>
-              <v-tooltip activator="parent"> Delete Export </v-tooltip>
-            </v-btn>
-            <v-card-text class="h-100 d-flex align-center justify-center">
-              <v-img :src="selectedExport?.image_path" height="100%"></v-img>
-            </v-card-text>
-          </ToolsVGlassCard>
+          <SharedShowExport
+            v-else-if="selectedExport"
+            :project-id="project?.id ?? 0"
+            :output="selectedExport"
+          />
           <!-- content -->
         </v-col>
       </div>

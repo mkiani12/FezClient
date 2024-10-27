@@ -272,16 +272,6 @@ const clearOperate = (value: boolean) => {
   }
 };
 
-const deleteExport = () => {
-  if (selectedExport.value && selectedProject.value) {
-    projects.showDeleteDialog(
-      "Export",
-      selectedExport.value,
-      selectedProject.value.id
-    );
-  }
-};
-
 // returns true if required band isn't filled
 const checkRequireBands = (bands: Band[]) => {
   let haveRequireBands = true;
@@ -506,28 +496,10 @@ onBeforeUnmount(() => {
             class="overflow-hidden h-100 d-flex flex-column"
           >
             <v-card-text class="pa-0 overflow-y-auto">
-              <v-list class="bg-transparent text-primary rounded-xl">
-                <p class="text-primary py-3 pl-4">Exports</p>
-                <v-divider></v-divider>
-                <v-list-item
-                  v-for="(exported, index) in selectedProject?.operation_output"
-                  :key="index"
-                  class="text-primary"
-                  :title="exported.title"
-                  @click="showExport(exported)"
-                ></v-list-item>
-                <p
-                  v-if="
-                    !selectedProject ||
-                    selectedProject.operation_output.length < 1
-                  "
-                  class="text-primary text-center text-body-1 py-3"
-                >
-                  There is no export yet!
-                  <br />
-                  try to export something
-                </p>
-              </v-list>
+              <SharedExportList
+                :exports="selectedProject?.operation_output ?? []"
+                @show-export="showExport"
+              />
             </v-card-text>
 
             <v-card-actions v-if="selectedProject" class="d-flex flex-column">
@@ -610,20 +582,11 @@ onBeforeUnmount(() => {
           </ToolsVGlassCard>
           <!-- chooseFileView -->
           <!-- showExportView -->
-          <ToolsVGlassCard v-else transparent class="h-100">
-            <v-btn
-              class="position-absolute right-0 top-0 mr-3 mt-3 z-10"
-              icon
-              variant="text"
-              @click="deleteExport"
-            >
-              <v-icon :icon="TrashIcon"></v-icon>
-              <v-tooltip activator="parent"> Delete Export </v-tooltip>
-            </v-btn>
-            <v-card-text class="h-100 d-flex align-center justify-center">
-              <v-img :src="selectedExport?.image_path" height="100%"></v-img>
-            </v-card-text>
-          </ToolsVGlassCard>
+          <SharedShowExport
+            v-else-if="selectedExport"
+            :project-id="selectedProject?.id ?? 0"
+            :output="selectedExport"
+          />
           <!-- showExportView -->
         </v-col>
         <!-- content -->
