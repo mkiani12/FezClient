@@ -1,0 +1,108 @@
+<template>
+  <v-card-item class="h-100 d-flex align-center justify-center">
+    <v-row>
+      <v-col v-for="band in bands" :key="band" cols="4">
+        <v-card
+          v-if="!modelValue[band]"
+          border="dashed md primary opacity-75"
+          class="rounded-xl text-center"
+          color="transparent"
+          max-width="500"
+          max-height="400"
+        >
+          <v-card-text
+            class="d-flex flex-column justify-center align-center h-100"
+          >
+            <h2 class="text-h4 text-primary">{{ band }}</h2>
+            <p class="text-primary mb-6 mt-2">
+              Upload different image bands for processing. Band validation is
+              currently unavailable. Please upload correct bands.
+            </p>
+            <SharedChooseFile
+              :project-id="projectId"
+              @choose="(e) => selectFile(e, band)"
+            >
+              <template #default="{ props }">
+                <v-btn v-bind="props"> Upload File or Choose one </v-btn>
+              </template>
+            </SharedChooseFile>
+          </v-card-text>
+        </v-card>
+        <v-hover v-else v-slot="{ isHovering, props }">
+          <v-card
+            border="dashed md primary opacity-75"
+            class="rounded-xl text-center"
+            color="transparent"
+            height="100%"
+            max-width="500"
+            max-height="400"
+            v-bind="props"
+          >
+            <v-card-text
+              class="d-flex flex-column justify-center align-center h-100 pa-0"
+            >
+              <v-img
+                :src="modelValue[band].thumbnail_path"
+                height="100%"
+                max-height="100%"
+                width="auto"
+              >
+                <v-expand-transition>
+                  <div
+                    v-if="isHovering"
+                    class="d-flex flex-column align-center justify-center transition-fast-in-fast-out opacity-25 v-card--reveal text-h2"
+                    style="
+                      height: 100%;
+                      background-color: rgba(var(--v-theme-primary), 0.4);
+                    "
+                  >
+                    <h3 class="text-h3 text-center text-white">
+                      {{ band }}
+                    </h3>
+                    <v-btn
+                      color="white"
+                      icon
+                      variant="text"
+                      size="60"
+                      @click="clearFile(band)"
+                    >
+                      <v-icon size="60" :icon="CloseIcon"></v-icon>
+                    </v-btn>
+                  </div>
+                </v-expand-transition>
+              </v-img>
+            </v-card-text>
+          </v-card>
+        </v-hover>
+      </v-col>
+    </v-row>
+  </v-card-item>
+</template>
+
+<script setup lang="ts">
+import type { ChooseFileDto } from "~/types/dto/components/ChooseFileDto";
+import type { Band, SelectedBands } from "~/types/tools/tools";
+import CloseIcon from "~icons/material-symbols/cancel-outline-rounded";
+
+const emit = defineEmits<{
+  (e: "update:model-value", value: SelectedBands): void;
+}>();
+
+const props = defineProps<{
+  projectId: number;
+  modelValue: SelectedBands;
+}>();
+
+const selectFile = (e: ChooseFileDto, band: Band) => {
+  props.modelValue[band] = e;
+  emit("update:model-value", props.modelValue);
+};
+
+const clearFile = (band: Band) => {
+  props.modelValue[band] = null;
+};
+
+const bands: Band[] = ["RED", "GREEN", "BLUE", "NIR", "SWIR1", "SWIR2"];
+</script>
+
+<style scoped></style>

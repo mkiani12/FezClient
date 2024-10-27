@@ -12,12 +12,14 @@ interface SelectedBands {
   SWIR2: ProjectFile | null;
 }
 
+interface SelectedBeforeAfterBands {
+  before: SelectedBands;
+  after: SelectedBands;
+}
+
 interface SelectedFiles {
   bands: SelectedBands;
-  before_after: {
-    before: SelectedBands;
-    after: SelectedBands;
-  };
+  before_after: SelectedBeforeAfterBands;
   tif: ProjectFile | null;
 }
 
@@ -57,6 +59,7 @@ interface ActionList {
 export type {
   Band,
   SelectedBands,
+  SelectedBeforeAfterBands,
   SelectedFiles,
   Action,
   ActionList,

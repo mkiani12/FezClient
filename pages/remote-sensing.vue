@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import CloseIcon from "~icons/material-symbols/cancel-outline-rounded";
 import BackIcon from "~icons/material-symbols/arrow-circle-left-outline-rounded";
 import TrashIcon from "~icons/material-symbols/delete-outline-rounded";
 import BandIcon from "~icons/material-symbols/document-scanner-outline-rounded";
 import BeforeAfterIcon from "~icons/material-symbols/two-pager-rounded";
 import TifIcon from "~icons/material-symbols/imagesmode-outline";
-import FixIcon from "~icons/material-symbols-light/settings-alert-outline-rounded";
+
+import { isEqual } from "lodash";
+
+// todo: clean view and make components of this views
 
 import { actions } from "~/data/actionsData";
 
@@ -16,7 +18,6 @@ import type {
   OperationMode,
   SelectedFiles,
 } from "~/types/tools/tools";
-import type { ChooseFileDto } from "~/types/dto/components/ChooseFileDto";
 
 const axios = useApi();
 const notify = useSnackbarStore();
@@ -72,9 +73,37 @@ const selectedOperationMode = ref<OperationMode>({
   value: "bands",
 });
 
-const bands: Band[] = ["RED", "GREEN", "BLUE", "NIR", "SWIR1", "SWIR2"];
-
-const disabledTools = ref(true);
+const disabledTools = computed(() => {
+  return isEqual(selectedFiles.value, {
+    bands: {
+      RED: null,
+      GREEN: null,
+      BLUE: null,
+      NIR: null,
+      SWIR1: null,
+      SWIR2: null,
+    },
+    before_after: {
+      before: {
+        RED: null,
+        GREEN: null,
+        BLUE: null,
+        NIR: null,
+        SWIR1: null,
+        SWIR2: null,
+      },
+      after: {
+        RED: null,
+        GREEN: null,
+        BLUE: null,
+        NIR: null,
+        SWIR1: null,
+        SWIR2: null,
+      },
+    },
+    tif: null,
+  });
+});
 
 const view = ref<"chooseProject" | "showExport">("chooseProject");
 const selectedExport = ref<ExportedFile | null>(null);
@@ -87,34 +116,6 @@ const showExport = (exported: ExportedFile) => {
 const clearShowExport = () => {
   selectedExport.value = null;
   view.value = "chooseProject";
-};
-
-const selectFile = (
-  file: ChooseFileDto,
-  band?: Band,
-  mode?: "before" | "after"
-) => {
-  if (band && mode && selectedOperationMode.value.value == "before_after") {
-    selectedFiles.value[selectedOperationMode.value.value][mode][band] = file;
-  } else if (band && selectedOperationMode.value.value == "bands") {
-    selectedFiles.value[selectedOperationMode.value.value][band] = file;
-  } else if (selectedOperationMode.value.value == "tif") {
-    selectedFiles.value[selectedOperationMode.value.value] = file;
-  }
-
-  disabledTools.value = false;
-
-  console.log(selectedFiles.value);
-};
-
-const clearFile = (band?: Band, mode?: "before" | "after") => {
-  if (band && mode && selectedOperationMode.value.value == "before_after") {
-    selectedFiles.value[selectedOperationMode.value.value][mode][band] = null;
-  } else if (band && selectedOperationMode.value.value == "bands") {
-    selectedFiles.value[selectedOperationMode.value.value][band] = null;
-  } else if (selectedOperationMode.value.value == "tif") {
-    selectedFiles.value[selectedOperationMode.value.value] = null;
-  }
 };
 
 const clearProject = () => {
@@ -148,7 +149,6 @@ const clearProject = () => {
     },
     tif: null,
   };
-  disabledTools.value = true;
   clearShowExport();
 };
 
@@ -560,202 +560,21 @@ onBeforeUnmount(() => {
             transparent
             class="h-100"
           >
-            <v-card-item
+            <RemoteSensingBandsSelect
               v-if="selectedOperationMode.value == 'bands'"
-              class="h-100 d-flex align-center justify-center"
-            >
-              <v-row>
-                <v-col v-for="band in bands" :key="band" cols="4">
-                  <v-card
-                    v-if="!selectedFiles.bands[band]"
-                    border="dashed md primary opacity-75"
-                    class="rounded-xl text-center"
-                    color="transparent"
-                    max-width="500"
-                    max-height="400"
-                  >
-                    <v-card-text
-                      class="d-flex flex-column justify-center align-center h-100"
-                    >
-                      <h2 class="text-h4 text-primary">{{ band }}</h2>
-                      <p class="text-primary mb-6 mt-2">
-                        Upload different image bands for processing. Band
-                        validation is currently unavailable. Please upload
-                        correct bands.
-                      </p>
-                      <SharedChooseFile
-                        :project-id="selectedProject.id"
-                        @choose="(e) => selectFile(e, band)"
-                      >
-                        <template #default="{ props }">
-                          <v-btn v-bind="props">
-                            Upload File or Choose one
-                          </v-btn>
-                        </template>
-                      </SharedChooseFile>
-                    </v-card-text>
-                  </v-card>
-                  <v-hover v-else v-slot="{ isHovering, props }">
-                    <v-card
-                      border="dashed md primary opacity-75"
-                      class="rounded-xl text-center"
-                      color="transparent"
-                      height="100%"
-                      max-width="500"
-                      max-height="400"
-                      v-bind="props"
-                    >
-                      <v-card-text
-                        class="d-flex flex-column justify-center align-center h-100 pa-0"
-                      >
-                        <v-img
-                          :src="selectedFiles.bands[band].thumbnail_path"
-                          height="100%"
-                          max-height="100%"
-                          width="auto"
-                        >
-                          <v-expand-transition>
-                            <div
-                              v-if="isHovering"
-                              class="d-flex flex-column align-center justify-center transition-fast-in-fast-out opacity-25 v-card--reveal text-h2"
-                              style="
-                                height: 100%;
-                                background-color: rgba(
-                                  var(--v-theme-primary),
-                                  0.4
-                                );
-                              "
-                            >
-                              <h3 class="text-h3 text-center text-white">
-                                {{ band }}
-                              </h3>
-                              <v-btn
-                                color="white"
-                                icon
-                                variant="text"
-                                size="60"
-                                @click="clearFile(band)"
-                              >
-                                <v-icon size="60" :icon="CloseIcon"></v-icon>
-                              </v-btn>
-                            </div>
-                          </v-expand-transition>
-                        </v-img>
-                      </v-card-text>
-                    </v-card>
-                  </v-hover>
-                </v-col>
-              </v-row>
-            </v-card-item>
-            <v-card-item
+              v-model="selectedFiles.bands"
+              :project-id="selectedProject.id"
+            />
+            <RemoteSensingBeforeAfterSelect
               v-else-if="selectedOperationMode.value == 'before_after'"
-              class="h-100 d-flex align-center justify-center"
-            >
-              <v-card
-                border="dashed md primary opacity-75"
-                class="rounded-xl text-center"
-                color="transparent"
-                max-width="500"
-                max-height="400"
-              >
-                <v-card-text
-                  class="d-flex flex-column justify-center align-center h-100"
-                >
-                  <v-icon color="primary" size="100" :icon="FixIcon"></v-icon>
-                  <p class="text-primary my-6">
-                    Exciting changes are coming to this page! We're working hard
-                    to enhance your remote sensing experience. Please come back
-                    soon to explore the new features.
-                  </p>
-                </v-card-text>
-              </v-card>
-            </v-card-item>
-            <v-card-item
+              v-model="selectedFiles.before_after"
+              :project-id="selectedProject.id"
+            />
+            <RemoteSensingSingleFileSelect
               v-else-if="selectedOperationMode.value == 'tif'"
-              class="h-100 d-flex align-center justify-center"
-            >
-              <v-row>
-                <v-col cols="12">
-                  <v-card
-                    v-if="!selectedFiles.tif"
-                    border="dashed md primary opacity-75"
-                    class="rounded-xl text-center"
-                    color="transparent"
-                    max-width="500"
-                    max-height="400"
-                  >
-                    <v-card-text
-                      class="d-flex flex-column justify-center align-center h-100"
-                    >
-                      <h2 class="text-h4 text-primary">Tif File</h2>
-                      <p class="text-primary mb-6 mt-2">
-                        Upload *.tif image for processing.
-                      </p>
-                      <SharedChooseFile
-                        :project-id="selectedProject.id"
-                        @choose="(e) => selectFile(e)"
-                      >
-                        <template #default="{ props }">
-                          <v-btn v-bind="props">
-                            Upload File or Choose one
-                          </v-btn>
-                        </template>
-                      </SharedChooseFile>
-                    </v-card-text>
-                  </v-card>
-                  <v-hover v-else v-slot="{ isHovering, props }">
-                    <v-card
-                      border="dashed md primary opacity-75"
-                      class="rounded-xl text-center"
-                      color="transparent"
-                      height="100%"
-                      max-width="500"
-                      max-height="400"
-                      v-bind="props"
-                    >
-                      <v-card-text
-                        class="d-flex flex-column justify-center align-center h-100 pa-0"
-                      >
-                        <v-img
-                          :src="selectedFiles.tif.thumbnail_path"
-                          height="100%"
-                          max-height="100%"
-                          min-width="500"
-                          width="auto"
-                        >
-                          <v-expand-transition>
-                            <div
-                              v-if="isHovering"
-                              class="d-flex flex-column align-center justify-center transition-fast-in-fast-out opacity-25 v-card--reveal text-h2"
-                              style="
-                                height: 100%;
-                                background-color: rgba(
-                                  var(--v-theme-primary),
-                                  0.4
-                                );
-                              "
-                            >
-                              <h3 class="text-h3 text-center text-white">
-                                Tif file
-                              </h3>
-                              <v-btn
-                                color="white"
-                                icon
-                                variant="text"
-                                size="60"
-                                @click="clearFile()"
-                              >
-                                <v-icon size="60" :icon="CloseIcon"></v-icon>
-                              </v-btn>
-                            </div>
-                          </v-expand-transition>
-                        </v-img>
-                      </v-card-text>
-                    </v-card>
-                  </v-hover>
-                </v-col>
-              </v-row>
-            </v-card-item>
+              v-model="selectedFiles.tif"
+              :project-id="selectedProject.id"
+            />
           </ToolsVGlassCard>
           <!-- chooseProjectView -->
           <!-- chooseFileView -->
