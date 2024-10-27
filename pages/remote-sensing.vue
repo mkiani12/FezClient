@@ -1,14 +1,10 @@
 <script lang="ts" setup>
 import { isEqual } from "lodash";
 
-// todo: clean view and make components of this views
-
 import { operationModes } from "~/data/actionsData";
 
 import type { Project, ExportedFile } from "~/types/projects/projects";
 import type { OperationMode, SelectedFiles } from "~/types/tools/tools";
-
-const projects = useProjectStore();
 
 const { $listen, $off } = useNuxtApp();
 
@@ -131,8 +127,14 @@ const selectProject = (project: Project) => {
 };
 
 onMounted(() => {
-  $listen("project:delete-export", () => {
-    projects.loadProjects(true);
+  $listen("project:delete-export", (id: number) => {
+    if (selectedProject.value?.operation_output) {
+      selectedProject.value.operation_output =
+        selectedProject.value.operation_output.filter(
+          (operation) => operation.id != id
+        );
+    }
+    clearShowExport();
   });
 });
 

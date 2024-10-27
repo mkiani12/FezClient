@@ -131,21 +131,42 @@ export const useProjectStore = defineStore("project", () => {
   };
 
   const deleteProject = () => {
-    loadProjects(true);
-    clearDeleteDialog();
-    $event("project:delete-project");
+    axios
+      .delete(`/project/delete/${selectedDeleteObject.value?.id}`)
+      .then(() => {
+        loadProjects(true);
+        clearDeleteDialog();
+        $event("project:delete-project");
+      })
+      .catch((e) => {
+        notify.handleCatch(e);
+      });
   };
 
   const deleteFile = () => {
-    loadProjects(true);
-    clearDeleteDialog();
-    $event("project:delete-file");
+    axios
+      .delete(`/file/delete/${selectedDeleteObject.value?.id}`)
+      .then(() => {
+        loadProjects(true);
+        clearDeleteDialog();
+        $event("project:delete-file");
+      })
+      .catch((e) => {
+        notify.handleCatch(e);
+      });
   };
 
   const deleteExport = () => {
-    loadProjects(true);
-    clearDeleteDialog();
-    $event("project:delete-export");
+    axios
+      .delete(`/operation/delete/${selectedDeleteObject.value?.id}`)
+      .then(() => {
+        loadProjects(true);
+        clearDeleteDialog();
+        $event("project:delete-export", selectedDeleteObject.value?.id);
+      })
+      .catch((e) => {
+        notify.handleCatch(e);
+      });
   };
 
   // Expose state and actions

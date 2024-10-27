@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, shallowRef } from "vue";
 import sidebarItems from "@/components/layout/full/vertical-sidebar/sidebarItem";
-import { Menu2Icon } from "vue-tabler-icons";
+// import { Menu2Icon } from "vue-tabler-icons";
 const sidebarMenu = shallowRef(sidebarItems);
 const sDrawer = ref(true);
 const { localeProperties } = useI18n();

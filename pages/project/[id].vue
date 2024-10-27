@@ -103,10 +103,17 @@ onMounted(() => {
 
   $listen("project:delete-file", () => {
     getProjectData();
+    selectImage(0);
   });
 
-  $listen("project:delete-export", () => {
+  $listen("project:delete-export", (id: number) => {
+    if (project.value?.operation_output) {
+      project.value.operation_output = project.value.operation_output.filter(
+        (operation) => operation.id != id
+      );
+    }
     getProjectData();
+    clearShowExport();
   });
 
   getProjectData();
@@ -272,7 +279,6 @@ onBeforeUnmount(() => {
               <v-btn
                 class="position-absolute right-0 top-0 mr-3 z-10"
                 icon
-                variant="text"
                 @click="deleteFile(selectedImage)"
               >
                 <v-icon :icon="TrashIcon"></v-icon>
