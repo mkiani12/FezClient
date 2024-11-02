@@ -1,5 +1,13 @@
 <template>
   <v-card-item class="h-100 d-flex align-center justify-center">
+    <SharedChooseFile
+      :choose-file-dialog="chooseFileDialog"
+      :selected-band="selectedBand"
+      :project-id="projectId"
+      @choose="selectFile"
+      @close="chooseFileDialog = false"
+    >
+    </SharedChooseFile>
     <v-row>
       <v-col v-for="band in bands" :key="band" cols="4">
         <v-card
@@ -18,14 +26,10 @@
               Upload different image bands for processing. Band validation is
               currently unavailable. Please upload correct bands.
             </p>
-            <SharedChooseFile
-              :project-id="projectId"
-              @choose="(e) => selectFile(e, band)"
-            >
-              <template #default="{ props }">
-                <v-btn v-bind="props"> Upload File or Choose one </v-btn>
-              </template>
-            </SharedChooseFile>
+
+            <v-btn @click="openChooseFile(band)">
+              Upload File or Choose one
+            </v-btn>
           </v-card-text>
         </v-card>
         <v-hover v-else v-slot="{ isHovering, props }">
@@ -84,6 +88,9 @@ import type { ChooseFileDto } from "~/types/dto/components/ChooseFileDto";
 import type { Band, SelectedBands } from "~/types/tools/tools";
 import CloseIcon from "~icons/material-symbols/cancel-outline-rounded";
 
+const chooseFileDialog = ref(false);
+const selectedBand = ref<Band>("RED");
+
 const emit = defineEmits<{
   (e: "update:model-value", value: SelectedBands): void;
 }>();
@@ -93,8 +100,14 @@ const props = defineProps<{
   modelValue: SelectedBands;
 }>();
 
-const selectFile = (e: ChooseFileDto, band: Band) => {
-  props.modelValue[band] = e;
+const openChooseFile = (band: Band) => {
+  selectedBand.value = band;
+  chooseFileDialog.value = true;
+};
+
+const selectFile = (data: ChooseFileDto) => {
+  props.modelValue[data.band] = data.file;
+  chooseFileDialog.value = false;
   emit("update:model-value", props.modelValue);
 };
 

@@ -150,6 +150,7 @@ onBeforeUnmount(() => {
       :disabled="disabledTools"
       :selected-files="selectedFiles"
       @show-export="showExport"
+      @change-mode="(e) => (selectedOperationMode = e)"
     />
     <!-- header -->
     <div class="tool-content">

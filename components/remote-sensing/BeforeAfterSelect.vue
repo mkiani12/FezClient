@@ -21,6 +21,7 @@
 
 <script setup lang="ts">
 import type { ChooseFileDto } from "~/types/dto/components/ChooseFileDto";
+import type { ProjectFile } from "~/types/projects/projects";
 import type { Band, SelectedBeforeAfterBands } from "~/types/tools/tools";
 import FixIcon from "~icons/material-symbols-light/settings-alert-outline-rounded";
 
@@ -33,7 +34,7 @@ const props = defineProps<{
   modelValue: SelectedBeforeAfterBands;
 }>();
 
-const selectFile = (e: ChooseFileDto, band: Band, mode: "before" | "after") => {
+const selectFile = (e: ProjectFile, band: Band, mode: "before" | "after") => {
   props.modelValue[mode][band] = e;
   emit("update:model-value", props.modelValue);
 };

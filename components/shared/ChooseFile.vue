@@ -3,21 +3,23 @@ import uploadBtnIcon from "~icons/material-symbols-light/upload-rounded";
 import type { Project, ProjectFile } from "~/types/projects/projects";
 import type { ChooseFileDto } from "~/types/dto/components/ChooseFileDto";
 import moment from "jalali-moment";
+import type { Band } from "~/types/tools/tools";
 
 const emit = defineEmits<{
-  (e: "choose", file: ChooseFileDto): void;
+  (e: "choose", value: ChooseFileDto): void;
+  (e: "close"): void;
 }>();
 
 const props = defineProps<{
   projectId: string | number;
+  selectedBand: Band;
+  chooseFileDialog: boolean;
 }>();
 
 const axios = useApi();
 const notify = useSnackbarStore();
 const projects = useProjectStore();
 const { mediaRules } = useValidation();
-
-const chooseFileDialog = ref(false);
 
 const loading = ref(false);
 
@@ -28,8 +30,7 @@ const uploading = ref(false);
 const uploadProgress = ref(0);
 
 const selectFile = (file: ProjectFile) => {
-  emit("choose", file);
-  chooseFileDialog.value = false;
+  emit("choose", { file, band: props.selectedBand });
 };
 
 const uploadFile = () => {
@@ -84,7 +85,7 @@ onMounted(async () => {
 </script>
 <template>
   <v-dialog
-    v-model="chooseFileDialog"
+    :model-value="chooseFileDialog"
     max-width="600"
     @update:modelValue="clearDialog"
   >
@@ -100,7 +101,7 @@ onMounted(async () => {
             icon
             variant="text"
             color="white"
-            @click="chooseFileDialog = false"
+            @click="emit('close')"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn>

@@ -1,5 +1,13 @@
 <template>
   <v-card-item class="h-100 d-flex align-center justify-center">
+    <SharedChooseFile
+      :choose-file-dialog="chooseFileDialog"
+      :selected-band="'RED'"
+      :project-id="projectId"
+      @choose="(e) => selectFile(e)"
+      @close="chooseFileDialog = false"
+    >
+    </SharedChooseFile>
     <v-row>
       <v-col cols="12">
         <v-card
@@ -17,14 +25,8 @@
             <p class="text-primary mb-6 mt-2">
               Upload *.tif image for processing.
             </p>
-            <SharedChooseFile
-              :project-id="projectId"
-              @choose="(e) => selectFile(e)"
-            >
-              <template #default="{ props }">
-                <v-btn v-bind="props"> Upload File or Choose one </v-btn>
-              </template>
-            </SharedChooseFile>
+
+            <v-btn @click="openChooseFile"> Upload File or Choose one </v-btn>
           </v-card-text>
         </v-card>
         <v-hover v-else v-slot="{ isHovering, props }">
@@ -82,6 +84,8 @@ import type { ChooseFileDto } from "~/types/dto/components/ChooseFileDto";
 import type { ProjectFile } from "~/types/projects/projects";
 import CloseIcon from "~icons/material-symbols/cancel-outline-rounded";
 
+const chooseFileDialog = ref(false);
+
 const emit = defineEmits<{
   (e: "update:model-value", value: ProjectFile | null): void;
 }>();
@@ -91,8 +95,13 @@ const props = defineProps<{
   modelValue: ProjectFile | null;
 }>();
 
+const openChooseFile = () => {
+  chooseFileDialog.value = true;
+};
+
 const selectFile = (e: ChooseFileDto) => {
-  emit("update:model-value", e);
+  emit("update:model-value", e.file);
+  chooseFileDialog.value = false;
 };
 
 const clearFile = () => {

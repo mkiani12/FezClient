@@ -139,7 +139,10 @@
             {{ selectedOperationMode.title }}
           </v-tooltip>
           <v-menu activator="parent">
-            <v-item-group v-model="selectedOperationMode">
+            <v-item-group
+              v-model="selectedOperationMode"
+              @update:model-value="chengeOperationMode"
+            >
               <v-list>
                 <v-item
                   v-for="mode in operationModes"
@@ -187,6 +190,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "showExport", payload: ExportedFile): void;
+  (e: "changeMode", payload: OperationMode): void;
 }>();
 
 const selectedOperationMode = ref<OperationMode>(operationModes[0]);
@@ -197,6 +201,10 @@ const title = ref("");
 const operationLoading = ref(false);
 const operationMode = ref<"single" | "group">("single");
 const selectedInnerOperate = ref<Action | null>(null);
+
+const chengeOperationMode = () => {
+  emit("changeMode", selectedOperationMode.value);
+};
 
 const prepareOperationData = (): OperationDataDto => {
   let bands = {};
