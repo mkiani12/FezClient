@@ -32,7 +32,7 @@
         <v-hover v-else v-slot="{ isHovering, props }">
           <v-card
             border="dashed md primary opacity-75"
-            class="rounded-xl text-center"
+            class="rounded-xl text-center overflow-hidden"
             color="transparent"
             height="100%"
             max-width="500"
