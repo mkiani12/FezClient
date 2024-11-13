@@ -23,6 +23,7 @@ export const useProjectStore = defineStore("project", () => {
   const loading = ref(false);
   const projects = ref<Project[]>([]);
 
+  const deleting = ref(false);
   const deleteDialog = ref(false);
   const deleteType = ref<DeleteType>("");
   const selectedDeleteObject = ref<Project | ExportedFile | ProjectFile | null>(
@@ -116,22 +117,24 @@ export const useProjectStore = defineStore("project", () => {
     deleteDialog.value = false;
   };
 
-  const doDelete = () => {
+  const doDelete = async () => {
+    deleting.value = true;
     switch (deleteType.value) {
       case "Project":
-        deleteProject();
+        await deleteProject();
         break;
       case "File":
-        deleteFile();
+        await deleteFile();
         break;
       case "Export":
-        deleteExport();
+        await deleteExport();
         break;
     }
+    deleting.value = false;
   };
 
-  const deleteProject = () => {
-    axios
+  const deleteProject = async () => {
+    await axios
       .delete(`/project/delete/${selectedDeleteObject.value?.id}`)
       .then(() => {
         loadProjects(true);
@@ -143,8 +146,8 @@ export const useProjectStore = defineStore("project", () => {
       });
   };
 
-  const deleteFile = () => {
-    axios
+  const deleteFile = async () => {
+    await axios
       .delete(`/file/delete/${selectedDeleteObject.value?.id}`)
       .then(() => {
         loadProjects(true);
@@ -156,8 +159,8 @@ export const useProjectStore = defineStore("project", () => {
       });
   };
 
-  const deleteExport = () => {
-    axios
+  const deleteExport = async () => {
+    await axios
       .delete(`/operation/delete/${selectedDeleteObject.value?.id}`)
       .then(() => {
         loadProjects(true);
@@ -174,6 +177,7 @@ export const useProjectStore = defineStore("project", () => {
     isLoaded,
     loading,
     projects,
+    deleting,
     deleteDialog,
     deleteType,
     loadProjects,

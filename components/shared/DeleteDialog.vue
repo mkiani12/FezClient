@@ -21,7 +21,13 @@ const projects = useProjectStore();
       </v-card-text>
       <v-card-actions>
         <v-btn @click="projects.clearDeleteDialog">Cancel</v-btn>
-        <v-btn color="error" @click="projects.doDelete"> Delete </v-btn>
+        <v-btn
+          color="error"
+          @click="projects.doDelete"
+          :loading="projects.deleting"
+        >
+          Delete
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
