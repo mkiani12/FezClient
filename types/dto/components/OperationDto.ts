@@ -7,7 +7,7 @@ interface OperationDataDto {
     swir1_band?: number | undefined;
     swir2_band?: number | undefined;
   };
-  extra_params: Record<string, string | number | null>;
+  extra_params: Record<string, string | number | boolean | null>;
   tif_file: number | undefined;
 }
 

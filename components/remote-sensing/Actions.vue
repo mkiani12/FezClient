@@ -78,15 +78,26 @@
               :rules="[rules.required]"
             ></v-text-field>
 
-            <v-text-field
+            <template
               v-for="param in selectedInnerOperate.extra_param"
-              v-model="param.value"
-              class="my-2"
-              :label="param.title"
-              :type="param.type"
-              :rules="[param.required ? rules.required : true]"
-              :hint="param.typeHint"
-            ></v-text-field>
+              :key="param.title"
+            >
+              <v-checkbox
+                v-if="param.type == 'Boolean'"
+                v-model="param.value"
+                :label="param.title"
+                :hint="param.typeHint"
+              ></v-checkbox>
+              <v-text-field
+                v-else
+                v-model="param.value"
+                class="my-2"
+                :label="param.title"
+                :type="param.type == 'Float' ? 'Number' : param.type"
+                :rules="[param.required ? rules.required : true]"
+                :hint="param.typeHint"
+              ></v-text-field>
+            </template>
           </v-form>
         </v-card-text>
 
@@ -176,6 +187,7 @@ import type {
 } from "~/types/tools/tools";
 import type { OperationDataDto } from "~/types/dto/components/OperationDto";
 import type { ExportedFile } from "~/types/projects/projects";
+import { isNull } from "lodash";
 
 const { validationRules: rules } = useValidation();
 const axios = useApi();
@@ -232,7 +244,7 @@ const prepareOperationData = (): OperationDataDto => {
     };
   }
 
-  const extra_params = {} as Record<string, string | number | null>;
+  const extra_params = {} as Record<string, string | number | boolean | null>;
 
   if (selectedInnerOperate.value?.extra_param) {
     for (const key in selectedInnerOperate.value?.extra_param) {
@@ -244,9 +256,9 @@ const prepareOperationData = (): OperationDataDto => {
       ) {
         const param = selectedInnerOperate.value?.extra_param[key];
 
-        extra_params[key] = param.value
-          ? param.type == "Number"
-            ? parseInt(param.value)
+        extra_params[key] = !isNull(param.value)
+          ? param.type == "Number" || param.type == "Float"
+            ? parseFloat(param.value)
             : param.value
           : null;
       }

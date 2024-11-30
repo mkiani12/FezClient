@@ -1,4 +1,5 @@
 // stores/snackbar.ts
+import { AxiosError } from "axios";
 import { defineStore } from "pinia";
 import type {
   ExportedFile,
@@ -39,8 +40,10 @@ export const useProjectStore = defineStore("project", () => {
         const { data } = await axios.get("/project/list/?skip=0&limit=10");
         projects.value = data;
         isLoaded.value = true;
-      } catch (e) {
-        notify.handleCatch(e);
+      } catch (e: any) {
+        if (!e.code || e.code != AxiosError.ERR_BAD_REQUEST) {
+          notify.handleCatch(e);
+        }
       } finally {
         loading.value = false;
       }

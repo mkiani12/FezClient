@@ -23,14 +23,22 @@ interface SelectedFiles {
   tif: ProjectFile | null;
 }
 
-type ExtraParamDataTypes = "Number" | "String";
+type ExtraParamDataTypes = "Number" | "String" | "Float" | "Boolean";
 
 interface ExtraParam {
   title: string;
-  type: ExtraParamDataTypes;
   required: boolean;
-  value: string;
   typeHint?: string;
+}
+
+interface ExtraParamBoolean extends ExtraParam {
+  type: Extract<ExtraParamDataTypes, "Boolean">;
+  value: boolean;
+}
+
+interface ExtraParamString extends ExtraParam {
+  type: Exclude<ExtraParamDataTypes, "Boolean">;
+  value: string;
 }
 
 interface Action {
@@ -39,7 +47,7 @@ interface Action {
   icon: SVGAttributes | any;
   requiredBands: Band[];
   childrens?: Action[];
-  extra_param?: Record<string, ExtraParam>;
+  extra_param?: Record<string, ExtraParamBoolean | ExtraParamString>;
 }
 
 type OperationModeValue = "bands" | "before_after" | "tif";

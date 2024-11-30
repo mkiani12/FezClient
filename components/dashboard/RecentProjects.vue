@@ -1,49 +1,3 @@
-<script setup lang="ts">
-import placeholderImage from "~/assets/placeholders/placeholder.jpg";
-
-const { validationRules: rules } = useValidation();
-const projects = useProjectStore();
-import moment from "jalali-moment";
-
-const loading = ref(false);
-
-const addProjectDialog = ref(false);
-const addProjectLoading = ref(false);
-const addProjectValidated = ref(false);
-
-const addProjectName = ref("");
-const addProjectDescription = ref("");
-
-const addProject = async () => {
-  addProjectDialog.value = false;
-
-  addProjectLoading.value = true;
-
-  const addProjectData = {
-    name: addProjectName.value,
-    description: addProjectDescription.value,
-  };
-
-  const success = await projects.addProject(addProjectData);
-
-  if (success) clearAddProject();
-
-  addProjectLoading.value = false;
-};
-
-const clearAddProject = () => {
-  addProjectName.value = "";
-  addProjectDescription.value = "";
-};
-
-onMounted(async () => {
-  if (!projects.isLoaded) {
-    loading.value = true;
-    await projects.loadProjects();
-    loading.value = false;
-  }
-});
-</script>
 <template>
   <ToolsVGlassCard transparent>
     <v-card-title class="pa-4 pa-md-7 text-h2 font-weight-regular">
@@ -249,6 +203,53 @@ onMounted(async () => {
     </v-card-text>
   </ToolsVGlassCard>
 </template>
+
+<script setup lang="ts">
+import placeholderImage from "~/assets/placeholders/placeholder.jpg";
+
+const { validationRules: rules } = useValidation();
+const projects = useProjectStore();
+import moment from "jalali-moment";
+
+const loading = ref(false);
+
+const addProjectDialog = ref(false);
+const addProjectLoading = ref(false);
+const addProjectValidated = ref(false);
+
+const addProjectName = ref("");
+const addProjectDescription = ref("");
+
+const addProject = async () => {
+  addProjectDialog.value = false;
+
+  addProjectLoading.value = true;
+
+  const addProjectData = {
+    name: addProjectName.value,
+    description: addProjectDescription.value,
+  };
+
+  const success = await projects.addProject(addProjectData);
+
+  if (success) clearAddProject();
+
+  addProjectLoading.value = false;
+};
+
+const clearAddProject = () => {
+  addProjectName.value = "";
+  addProjectDescription.value = "";
+};
+
+onMounted(async () => {
+  if (!projects.isLoaded) {
+    loading.value = true;
+    await projects.loadProjects();
+    loading.value = false;
+  }
+});
+</script>
 
 <style lang="scss">
 .skeleton-fullscreen .v-skeleton-loader__image {

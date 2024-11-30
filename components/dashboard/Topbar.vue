@@ -7,6 +7,8 @@ const { signOut } = useAuth();
 const logout = () => {
   signOut({
     callbackUrl: "/auth/login",
+  }).then(() => {
+    window.location.reload();
   });
 };
 </script>
