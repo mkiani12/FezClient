@@ -5,19 +5,16 @@
     </v-card-title>
     <v-card-text class="px-md-6 px-4">
       <v-row>
-        <v-col cols="7">
+        <v-col cols="9">
           <v-text-field
+            v-model="projectFilter"
             label="Filter projects"
             density="compact"
             max-width="500"
+            clearable
           ></v-text-field>
         </v-col>
-        <v-col cols="5" class="d-md-flex justify-end">
-          <v-select
-            max-width="200"
-            label="Sort by"
-            density="compact"
-          ></v-select>
+        <v-col cols="3" class="d-md-flex justify-end">
           <v-dialog v-model="addProjectDialog" max-width="450">
             <template #activator="{ props: activatorProps }">
               <v-btn v-bind="activatorProps" class="ml-3" icon color="primary">
@@ -74,7 +71,7 @@
               selected-class="bg-success"
             >
               <v-slide-group-item
-                v-for="(project, index) in projects.projects"
+                v-for="(project, index) in filteredProjects"
                 :key="index"
               >
                 <ToolsVGlassCard
@@ -173,18 +170,34 @@
                 </v-slide-group-item>
               </template>
               <v-slide-group-item
-                v-if="projects.projects.length < 1 && !loading"
+                v-if="filteredProjects.length < 1 && !loading"
               >
                 <ToolsVGlassCard
                   class="ma-4 border-white"
                   :card-props="{ width: 350, height: 250 }"
                 >
                   <v-card-text
+                    v-if="projectFilter.length < 1"
                     class="d-flex align-center justify-center h-100 flex-column"
                   >
                     <v-card-title class="text-center">
                       There is no Project <br />
                       try to make one
+                    </v-card-title>
+                    <v-btn
+                      icon
+                      color="primary"
+                      @click="addProjectDialog = true"
+                    >
+                      <v-icon>mdi-plus</v-icon>
+                    </v-btn>
+                  </v-card-text>
+                  <v-card-text
+                    v-else
+                    class="d-flex align-center justify-center h-100 flex-column"
+                  >
+                    <v-card-title class="text-center">
+                      No project founded
                     </v-card-title>
                     <v-btn
                       icon
@@ -210,6 +223,7 @@ import placeholderImage from "~/assets/placeholders/placeholder.jpg";
 const { validationRules: rules } = useValidation();
 const projects = useProjectStore();
 import moment from "jalali-moment";
+import type { Project } from "~/types/projects/projects";
 
 const loading = ref(false);
 
@@ -219,6 +233,33 @@ const addProjectValidated = ref(false);
 
 const addProjectName = ref("");
 const addProjectDescription = ref("");
+
+const projectFilter = ref("");
+
+const filteredProjects = computed<Project[]>(() => {
+  return projects.projects.filter((prj) => {
+    return (
+      prj.name
+        .toLowerCase()
+        .includes(projectFilter.value.toLocaleLowerCase()) ||
+      prj.description
+        .toLowerCase()
+        .includes(projectFilter.value.toLocaleLowerCase()) ||
+      prj.tag.toLowerCase().includes(projectFilter.value.toLocaleLowerCase()) ||
+      (prj.last_action ?? "")
+        .toLowerCase()
+        .includes(projectFilter.value.toLocaleLowerCase()) ||
+      moment(prj.created_at)
+        .format("DD MMMM YYYY")
+        .toLowerCase()
+        .includes(projectFilter.value.toLocaleLowerCase()) ||
+      moment(prj.updated_at)
+        .format("DD MMMM YYYY")
+        .toLowerCase()
+        .includes(projectFilter.value.toLocaleLowerCase())
+    );
+  });
+});
 
 const addProject = async () => {
   addProjectDialog.value = false;

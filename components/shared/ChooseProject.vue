@@ -27,6 +27,33 @@ const addProjectValidated = ref(false);
 const addProjectName = ref("");
 const addProjectDescription = ref("");
 
+const projectFilter = ref("");
+
+const filteredProjects = computed<Project[]>(() => {
+  return projects.projects.filter((prj) => {
+    return (
+      prj.name
+        .toLowerCase()
+        .includes(projectFilter.value.toLocaleLowerCase()) ||
+      prj.description
+        .toLowerCase()
+        .includes(projectFilter.value.toLocaleLowerCase()) ||
+      prj.tag.toLowerCase().includes(projectFilter.value.toLocaleLowerCase()) ||
+      (prj.last_action ?? "")
+        .toLowerCase()
+        .includes(projectFilter.value.toLocaleLowerCase()) ||
+      moment(prj.created_at)
+        .format("DD MMMM YYYY")
+        .toLowerCase()
+        .includes(projectFilter.value.toLocaleLowerCase()) ||
+      moment(prj.updated_at)
+        .format("DD MMMM YYYY")
+        .toLowerCase()
+        .includes(projectFilter.value.toLocaleLowerCase())
+    );
+  });
+});
+
 const addProject = async () => {
   addProjectLoading.value = true;
 
@@ -81,8 +108,16 @@ onMounted(async () => {
         </v-card-title>
         <v-card-text class="overflow-y-auto" style="height: 500px">
           <v-row>
+            <v-col cols="12">
+              <v-text-field
+                v-model="projectFilter"
+                label="Filter projects"
+                density="compact"
+                clearable
+              ></v-text-field>
+            </v-col>
             <v-col
-              v-for="(project, index) in projects.projects"
+              v-for="(project, index) in filteredProjects"
               :key="index"
               cols="12"
               md="6"
