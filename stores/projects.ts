@@ -101,6 +101,22 @@ export const useProjectStore = defineStore("project", () => {
       notify.showDefaultError();
     } else {
       foundedProject.operation_output.push(exported);
+      updateProject(projectId);
+    }
+  };
+
+  const updateProject = async (projectId: number) => {
+    const updatedProject = await getProject(projectId);
+    const indexToReplace = projects.value.findIndex(
+      (prj) => prj.id == projectId
+    );
+
+    if (
+      indexToReplace !== -1 &&
+      updatedProject &&
+      projects.value[indexToReplace]
+    ) {
+      projects.value[indexToReplace] = updatedProject;
     }
   };
 
