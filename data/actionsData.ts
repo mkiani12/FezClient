@@ -1,7 +1,40 @@
 import ImageEnhancementIcon from "~icons/carbon/edge-enhancement";
+import AdaptiveImageIcon from "~icons/mdi/tune";
+import EqualizeImageIcon from "~icons/material-symbols/equalizer";
+import FloatImageIcon from "~icons/ion/swap-horizontal";
+import GammaImageIcon from "~icons/tabler/sun";
+import LogAdjustIcon from "~icons/mdi/adjust";
+import OrginalImageIcon from "~icons/fa6-solid/image";
+import SigmodidImageIcon from "~icons/mdi/sine-wave";
+import RGBAdaptiveImageIcon from "~icons/mdi/gradient-horizontal";
+import RGBEqualizeImageIcon from "~icons/mdi/palette-outline";
+import RGBGammaImageIcon from "~icons/mdi/contrast-box";
+import RGBImageIcon from "~icons/mdi/image-outline";
+import PCAIcon from "~icons/material-symbols/analytics-outline";
 import BandIcon from "~icons/material-symbols/document-scanner-outline-rounded";
 import BeforeAfterIcon from "~icons/material-symbols/two-pager-rounded";
 import TifIcon from "~icons/material-symbols/imagesmode-outline";
+import SpectralIndicesIcon from "~icons/mdi/chart-line";
+import AFVIIcon from "~icons/fa6-solid/leaf";
+import BIIcon from "~icons/ic/round-wb-sunny";
+import NDVIIcon from "~icons/mdi/nature-people-outline";
+import NDWIIcon from "~icons/ion/water-outline";
+import SAVIIcon from "~icons/mdi/terrain";
+import UIIcon from "~icons/tabler/building-skyscraper";
+import SpectralProfileIcon from "~icons/mdi/chart-multiline";
+import HSVIcon from "~icons/carbon/color-palette";
+import IRHSVIcon from "~icons/mdi/flare";
+import HUEIcon from "~icons/mdi/palette";
+import IRHUEIcon from "~icons/mdi/palette-outline";
+import SATURATIONIcon from "~icons/mdi/adjust";
+import VALUEIcon from "~icons/mdi/brightness-6";
+import VALUEIRIcon from "~icons/mdi/radiator";
+import ClusterIcon from "~icons/mdi/group";
+import FiltersIcon from "~icons/mdi/filter";
+import GuassianIcon from "~icons/mdi/blur";
+import LaplacianIcon from "~icons/tabler/hexagon";
+import MedianIcon from "~icons/mdi/format-line-weight";
+import SobelIcon from "~icons/mdi/vector-line";
 
 import type { ActionList, OperationMode } from "~/types/tools/tools";
 
@@ -12,105 +45,99 @@ const actions: ActionList = {
     {
       title: "SPECTRAL INDICES",
       type: "spectral_indices",
-      icon: ImageEnhancementIcon,
+      icon: SpectralIndicesIcon,
       requiredBands: ["RED", "GREEN", "NIR", "SWIR1", "SWIR2"],
       childrens: [
         {
           title: "AFVI",
           type: "afvi",
-          icon: ImageEnhancementIcon,
+          icon: AFVIIcon,
           requiredBands: ["SWIR1", "NIR"],
         },
         {
           title: "BI",
           type: "bi",
-          icon: ImageEnhancementIcon,
+          icon: BIIcon,
           requiredBands: ["NIR", "GREEN", "RED"],
         },
         {
           title: "NDVI",
           type: "ndvi",
-          icon: ImageEnhancementIcon,
+          icon: NDVIIcon,
           requiredBands: ["RED", "NIR"],
         },
         {
           title: "NDWI",
           type: "ndwi",
-          icon: ImageEnhancementIcon,
+          icon: NDWIIcon,
           requiredBands: ["NIR", "GREEN"],
         },
         {
           title: "SAVI",
           type: "savi",
-          icon: ImageEnhancementIcon,
+          icon: SAVIIcon,
           requiredBands: ["RED", "NIR"],
         },
         {
           title: "UI",
           type: "ui",
-          icon: ImageEnhancementIcon,
+          icon: UIIcon,
           requiredBands: ["SWIR2", "NIR"],
-        },
-        {
-          title: "NDVI",
-          type: "ndvi",
-          icon: ImageEnhancementIcon,
-          requiredBands: ["RED", "NIR"],
         },
       ],
     },
     {
       title: "SPECTRAL PROFILE",
       type: "spectral_profile",
-      icon: ImageEnhancementIcon,
+      icon: SpectralProfileIcon,
       requiredBands: ["RED", "GREEN", "BLUE", "NIR", "SWIR1", "SWIR2"],
     },
     {
       title: "HSV",
       type: "hsv",
-      icon: ImageEnhancementIcon,
+      icon: HSVIcon,
       requiredBands: ["RED", "GREEN", "BLUE", "NIR", "SWIR1", "SWIR2"],
       childrens: [
         {
           title: "HSV",
           type: "hsv",
-          icon: ImageEnhancementIcon,
+          icon: HSVIcon,
           requiredBands: ["GREEN", "BLUE", "NIR"],
         },
         {
           title: "IRHSV",
           type: "irhsv",
-          icon: ImageEnhancementIcon,
+          icon: IRHSVIcon,
           requiredBands: ["RED", "SWIR1", "SWIR2"],
         },
         {
           title: "HUE",
           type: "hue",
-          icon: ImageEnhancementIcon,
+          icon: HUEIcon,
           requiredBands: ["GREEN", "BLUE", "NIR"],
         },
         {
           title: "IRHUE",
           type: "irhue",
-          icon: ImageEnhancementIcon,
+          icon: IRHUEIcon,
           requiredBands: ["RED", "SWIR1", "SWIR2"],
         },
         {
           title: "SATURATION",
           type: "saturation",
-          icon: ImageEnhancementIcon,
+          icon: SATURATIONIcon,
           requiredBands: ["GREEN", "BLUE", "NIR"],
         },
         {
           title: "VALUE",
           type: "valuehsv",
-          icon: ImageEnhancementIcon,
+          icon: VALUEIcon,
           requiredBands: ["GREEN", "BLUE", "NIR"],
         },
         {
           title: "VALUEIR",
           type: "valueirhsv",
-          icon: ImageEnhancementIcon,
+          icon: VALUEIRIcon,
           requiredBands: ["RED", "SWIR1", "SWIR2"],
         },
       ],
@@ -118,7 +145,7 @@ const actions: ActionList = {
     {
       title: "Cluster / \n K-means",
       type: "clustering",
-      icon: ImageEnhancementIcon,
+      icon: ClusterIcon,
       requiredBands: ["NIR"],
       extra_param: {
         n_clusters: {
@@ -146,7 +173,7 @@ const actions: ActionList = {
         {
           title: "Adaptive Image",
           type: "adaptive_image",
-          icon: ImageEnhancementIcon,
+          icon: AdaptiveImageIcon,
           requiredBands: ["NIR"],
           extra_param: {
             clip_limit: {
@@ -161,7 +188,7 @@ const actions: ActionList = {
         {
           title: "Equalize Image",
           type: "equalize_image",
-          icon: ImageEnhancementIcon,
+          icon: EqualizeImageIcon,
           requiredBands: ["NIR"],
           extra_param: {
             clip_limit: {
@@ -176,14 +203,14 @@ const actions: ActionList = {
         {
           title: "Float Image",
           type: "float_image",
-          icon: ImageEnhancementIcon,
+          icon: FloatImageIcon,
           requiredBands: ["NIR"],
           extra_param: {},
         },
         {
           title: "Gamma Image",
           type: "gamma_image",
-          icon: ImageEnhancementIcon,
+          icon: GammaImageIcon,
           requiredBands: ["NIR"],
           extra_param: {
             gamma: {
@@ -205,7 +232,7 @@ const actions: ActionList = {
         {
           title: "Log Adjust",
           type: "log_adjust",
-          icon: ImageEnhancementIcon,
+          icon: LogAdjustIcon,
           requiredBands: ["NIR"],
           extra_param: {
             gain: {
@@ -227,14 +254,14 @@ const actions: ActionList = {
         {
           title: "Orginal Image",
           type: "orginal_image",
-          icon: ImageEnhancementIcon,
+          icon: OrginalImageIcon,
           requiredBands: ["NIR"],
           extra_param: {},
         },
         {
           title: "Sigmodid Image",
           type: "sigmodid",
-          icon: ImageEnhancementIcon,
+          icon: SigmodidImageIcon,
           requiredBands: ["NIR"],
           extra_param: {
             gain: {
@@ -263,28 +290,28 @@ const actions: ActionList = {
         {
           title: "RGB Adaptive Image",
           type: "rgb_adaptive_image",
-          icon: ImageEnhancementIcon,
+          icon: RGBAdaptiveImageIcon,
           requiredBands: ["RED", "GREEN", "BLUE"],
           extra_param: {},
         },
         {
           title: "RGB Equalize Image",
           type: "rgb_equalize_image",
-          icon: ImageEnhancementIcon,
+          icon: RGBEqualizeImageIcon,
           requiredBands: ["RED", "GREEN", "BLUE"],
           extra_param: {},
         },
         {
           title: "RGB Gamma Image",
           type: "rgb_gamma_image",
-          icon: ImageEnhancementIcon,
+          icon: RGBGammaImageIcon,
           requiredBands: ["RED", "GREEN", "BLUE"],
           extra_param: {},
         },
         {
           title: "RGB Image",
           type: "rgb_image",
-          icon: ImageEnhancementIcon,
+          icon: RGBImageIcon,
           requiredBands: ["RED", "GREEN", "BLUE"],
           extra_param: {},
         },
@@ -293,7 +320,7 @@ const actions: ActionList = {
     {
       title: "PCA",
       type: "pca",
-      icon: ImageEnhancementIcon,
+      icon: PCAIcon,
       requiredBands: ["RED", "GREEN", "BLUE", "NIR", "SWIR1", "SWIR2"],
       extra_param: {},
     },
@@ -303,19 +330,19 @@ const actions: ActionList = {
     {
       title: "Filters",
       type: "filters",
-      icon: ImageEnhancementIcon,
+      icon: FiltersIcon,
       requiredBands: [],
       childrens: [
         {
           title: "Guassian",
           type: "guassion",
-          icon: ImageEnhancementIcon,
+          icon: GuassianIcon,
           requiredBands: [],
         },
         {
           title: "Laplacian",
           type: "laplacian",
-          icon: ImageEnhancementIcon,
+          icon: LaplacianIcon,
           requiredBands: [],
           extra_param: {
             kernel_size: {
@@ -330,7 +357,7 @@ const actions: ActionList = {
         {
           title: "Median",
           type: "median",
-          icon: ImageEnhancementIcon,
+          icon: MedianIcon,
           requiredBands: [],
           extra_param: {
             kernel_size: {
@@ -345,7 +372,7 @@ const actions: ActionList = {
         {
           title: "Sobel",
           type: "sobel",
-          icon: ImageEnhancementIcon,
+          icon: SobelIcon,
           requiredBands: [],
           extra_param: {
             kernel_size: {
