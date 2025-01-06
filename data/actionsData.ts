@@ -29,7 +29,7 @@ import IRHUEIcon from "~icons/mdi/palette-outline";
 import SATURATIONIcon from "~icons/mdi/adjust";
 import VALUEIcon from "~icons/mdi/brightness-6";
 import VALUEIRIcon from "~icons/mdi/radiator";
-import ClusterIcon from "~icons/mdi/group";
+import ClusterIcon from "~icons/material-symbols/scatter-plot";
 import FiltersIcon from "~icons/mdi/filter";
 import GuassianIcon from "~icons/mdi/blur";
 import LaplacianIcon from "~icons/tabler/hexagon";
